@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>ISTQB Trainer – Fragen ansehen</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/review.css">
+</head>
+<body data-lo-id="{{ lo_id }}">
+    <a href="/" class="back-link">&larr; Zurück zum Dashboard</a>
+    <h1 id="lo-title">Fragen ansehen</h1>
+
+    <div class="filter-bar">
+        <button class="filter-button active" data-filter="all">Alle Fragen</button>
+        <button class="filter-button" data-filter="struggling">Noch nicht gemeistert</button>
+    </div>
+
+    <div id="review-container">
+        <p>Lade Fragen...</p>
+    </div>
+
+    <script src="/static/js/review.js"></script>
+</body>
+</html>
