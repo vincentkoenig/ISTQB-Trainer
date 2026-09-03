@@ -489,6 +489,359 @@ def seed_lo1_part2(app):
         _insert_chapters(lo1, chapters_data)
 
 
+def seed_lo4(app):
+    """LO4 - Testanalyse und -entwurf (Kapitel 5.1 - 5.5)"""
+    with app.app_context():
+        lo4 = LearningObjective.query.filter_by(code="LO4").first()
+        if not lo4:
+            lo4 = LearningObjective(code="LO4", title="Testanalyse und -entwurf")
+            db.session.add(lo4)
+            db.session.commit()
+
+        chapters_data = [
+            {
+                "number": "5.1",
+                "title": "Testverfahren im Überblick",
+                "questions": [
+                    {
+                        "prompt": "Was unterstützen Testtechniken laut Präsentation?",
+                        "options": {
+                            "A": "Ausschließlich die Testdurchführung",
+                            "B": "Ausschließlich das Projektmanagement",
+                            "C": "Die Testanalyse und das Testdesign",
+                            "D": "Ausschließlich die Testautomatisierung",
+                        },
+                        "correct": "C",
+                        "explanation": "Testtechniken unterstützen die Testanalyse (was?) und das Testdesign (wie?).",
+                    },
+                    {
+                        "prompt": "Worauf basiert das Black-Box-Testverfahren?",
+                        "options": {
+                            "A": "Auf der internen Struktur des Codes",
+                            "B": "Auf dem spezifizierten Verhalten, ohne Bezug auf die interne Struktur",
+                            "C": "Ausschließlich auf der Erfahrung des Testers",
+                            "D": "Auf dem Quellcode-Review",
+                        },
+                        "correct": "B",
+                        "explanation": "Black-Box-Verfahren analysieren das spezifizierte Verhalten, ohne die interne Struktur zu berücksichtigen.",
+                    },
+                    {
+                        "prompt": "Warum bleiben Black-Box-Testfälle auch bei Änderungen der Implementierung nützlich?",
+                        "options": {
+                            "A": "Weil sie automatisch aktualisiert werden",
+                            "B": "Weil sie unabhängig von der Implementierung sind, solange das Verhalten gleich bleibt",
+                            "C": "Weil sie nur einmal erstellt werden müssen",
+                            "D": "Weil sie keine Testdaten benötigen",
+                        },
+                        "correct": "B",
+                        "explanation": "Solange sich das Verhalten nicht ändert, bleiben Black-Box-Testfälle unabhängig von der konkreten Implementierung gültig.",
+                    },
+                    {
+                        "prompt": "Wovon hängt die Effektivität erfahrungsbasierter Testverfahren ab?",
+                        "options": {
+                            "A": "Von der Anzahl der Testfälle",
+                            "B": "Von der verwendeten Programmiersprache",
+                            "C": "Von den Fähigkeiten und der Erfahrung des Testers",
+                            "D": "Von der Testautomatisierung",
+                        },
+                        "correct": "C",
+                        "explanation": "Bei erfahrungsbasierten Verfahren hängt alles vom Wissen und der Erfahrung des Testers ab.",
+                    },
+                    {
+                        "prompt": "Wann werden White-Box-Testfälle typischerweise erstellt?",
+                        "options": {
+                            "A": "Vor der Spezifikation der Anforderungen",
+                            "B": "Unabhängig von der Implementierung",
+                            "C": "Ausschließlich vom Endbenutzer",
+                            "D": "Nach der Planung oder Implementierung des zu testenden Objekts",
+                        },
+                        "correct": "D",
+                        "explanation": "White-Box-Testfälle werden nach der Planung oder Implementierung erstellt, da sie die interne Struktur kennen müssen.",
+                    },
+                ],
+            },
+            {
+                "number": "5.2",
+                "title": "Black-Box-Testverfahren",
+                "questions": [
+                    {
+                        "prompt": "Was ist das Grundprinzip der Äquivalenzklassenbildung?",
+                        "options": {
+                            "A": "Nur Grenzwerte werden getestet",
+                            "B": "Daten werden in Gruppen aufgeteilt, die auf die gleiche Weise verarbeitet werden - ein Defekt in einem Wert gilt für die ganze Klasse",
+                            "C": "Jeder einzelne mögliche Wert muss getestet werden",
+                            "D": "Nur Ausgabedaten werden klassifiziert",
+                        },
+                        "correct": "B",
+                        "explanation": "Ein Defekt, der bei einem Wert der Klasse entdeckt wird, sollte auch bei anderen Werten dieser Klasse nachweisbar sein.",
+                    },
+                    {
+                        "prompt": "Was ist der Unterschied zwischen der 2-Wert- und der 3-Wert-Grenzwertanalyse?",
+                        "options": {
+                            "A": "Die 2-Wert-Analyse ist immer genauer",
+                            "B": "Die 3-Wert-Analyse testet Grenzwert und zwei benachbarte Werte und ist genauer als die 2-Wert-Variante",
+                            "C": "Es gibt keinen Unterschied zwischen beiden",
+                            "D": "Die 2-Wert-Analyse wird nur bei Zustandsübergängen verwendet",
+                        },
+                        "correct": "B",
+                        "explanation": "Die 3-Wert-Grenzwertanalyse testet zusätzlich einen weiteren benachbarten Wert und ist dadurch genauer.",
+                    },
+                    {
+                        "prompt": "Ein Eingabefeld akzeptiert ganzzahlige Werte von 10 bis 50 (jeweils gültig). Welche vier Werte werden bei der 2-Wert-Grenzwertanalyse getestet?",
+                        "options": {
+                            "A": "9, 10, 50, 51",
+                            "B": "10, 11, 49, 50",
+                            "C": "0, 10, 50, 100",
+                            "D": "9, 11, 49, 51",
+                        },
+                        "correct": "A",
+                        "explanation": "Bei der 2-Wert-Grenzwertanalyse testet man jeweils den Grenzwert selbst und den direkten Nachbarn außerhalb: untere Grenze 9 (ungültig) und 10 (gültig), obere Grenze 50 (gültig) und 51 (ungültig).",
+                    },
+                    {
+                        "prompt": "Ein Formularfeld für das Lebensalter unterteilt Eingaben in drei Bereiche: unter 18 (ungültig), 18 bis 65 (gültig), über 65 (ungültig). Wie viele Äquivalenzklassen ergeben sich daraus?",
+                        "options": {
+                            "A": "Zwei Klassen",
+                            "B": "Vier Klassen",
+                            "C": "Drei Klassen",
+                            "D": "Eine einzige Klasse, da nur der gültige Bereich zählt",
+                        },
+                        "correct": "C",
+                        "explanation": "Es ergeben sich drei Äquivalenzklassen: unter 18, 18-65 und über 65 - jeweils eine für das gültige und die zwei ungültigen Segmente.",
+                    },
+                    {
+                        "prompt": "Was stellt eine Spalte in einer Entscheidungstabelle dar?",
+                        "options": {
+                            "A": "Eine einzelne Testperson",
+                            "B": "Einen Zustand des Systems",
+                            "C": "Eine eindeutige Kombination von Bedingungen und Aktionen (Entscheidungsregel)",
+                            "D": "Eine Zeitspanne des Tests",
+                        },
+                        "correct": "C",
+                        "explanation": "Jede Spalte in einer Entscheidungstabelle repräsentiert eine eindeutige Entscheidungsregel.",
+                    },
+                    {
+                        "prompt": "Warum ist eine vollständige Abdeckung aller Übergänge beim Zustandsübergangstest besonders bei sicherheitskritischer Software wichtig?",
+                        "options": {
+                            "A": "Weil dort weniger Tests benötigt werden",
+                            "B": "Weil ungültige Übergänge dort ignoriert werden können",
+                            "C": "Weil sicherheitskritische Software keine Zustände hat",
+                            "D": "Weil auch ungültige Übergänge zu kritischen Fehlern führen können und daher abgedeckt werden müssen",
+                        },
+                        "correct": "D",
+                        "explanation": "Gerade bei sicherheitskritischer Software können auch 'ungültige' Übergänge fatale Folgen haben.",
+                    },
+                    {
+                        "prompt": "Welche Kategorien von Daten können bei der Äquivalenzklassenbildung berücksichtigt werden?",
+                        "options": {
+                            "A": "Ausschließlich Eingabedaten",
+                            "B": "Eingabedaten, Ausgabedaten, zeitabhängige Werte oder Schnittstellenparameter",
+                            "C": "Ausschließlich Schnittstellenparameter",
+                            "D": "Ausschließlich zeitabhängige Werte",
+                        },
+                        "correct": "B",
+                        "explanation": "Klassen können Eingabedaten, Ausgabedaten, zeitabhängige Werte oder Schnittstellenparameter betreffen.",
+                    },
+                ],
+            },
+            {
+                "number": "5.3",
+                "title": "White-Box-Test",
+                "questions": [
+                    {
+                        "prompt": "Was ist das Ziel des Anweisungstests?",
+                        "options": {
+                            "A": "Überprüfung aller bedingten Codepfade",
+                            "B": "Sicherstellung der Testabdeckung aller Anweisungen im Code",
+                            "C": "Bewertung der Benutzerfreundlichkeit",
+                            "D": "Testen der externen Schnittstellen",
+                        },
+                        "correct": "B",
+                        "explanation": "Der Anweisungstest zielt darauf ab, alle Anweisungen im Code mindestens einmal auszuführen.",
+                    },
+                    {
+                        "prompt": "Ein Modul besteht aus 40 Anweisungen. Ein Testfall-Set führt 32 davon mindestens einmal aus. Wie hoch ist die Anweisungsabdeckung?",
+                        "options": {
+                            "A": "40 %",
+                            "B": "60 %",
+                            "C": "80 %",
+                            "D": "32 %",
+                        },
+                        "correct": "C",
+                        "explanation": "Anweisungsabdeckung = ausgeführte Anweisungen / alle Anweisungen × 100 = 32/40 × 100 = 80 %.",
+                    },
+                    {
+                        "prompt": "Ein Codeabschnitt hat 12 Zweige. Um eine Zweigabdeckung von 100 % zu erreichen, wie viele davon müssen mindestens einmal durchlaufen werden?",
+                        "options": {
+                            "A": "6 Zweige",
+                            "B": "10 Zweige",
+                            "C": "Alle 12 Zweige",
+                            "D": "Nur die Zweige mit Bedingungen, unbedingte Zweige zählen nicht",
+                        },
+                        "correct": "C",
+                        "explanation": "100 % Zweigabdeckung bedeutet, dass jeder der 12 Zweige mindestens einmal durchlaufen werden muss - sowohl bedingte als auch unbedingte.",
+                    },
+                    {
+                        "prompt": "Welchen Nachteil hat der Anweisungstest?",
+                        "options": {
+                            "A": "Er ist zu teuer in der Durchführung",
+                            "B": "Er kann Fehler, die von Daten abhängen, wie z.B. Division durch Null, möglicherweise nicht erkennen",
+                            "C": "Er benötigt keine Testwerkzeuge",
+                            "D": "Er kann nur bei agilen Projekten angewendet werden",
+                        },
+                        "correct": "B",
+                        "explanation": "Datenabhängige Fehler wie Division durch Null können beim reinen Anweisungstest übersehen werden.",
+                    },
+                    {
+                        "prompt": "Was überprüft der Zweigtest im Gegensatz zum reinen Anweisungstest zusätzlich?",
+                        "options": {
+                            "A": "Nur unbedingte Codepfade",
+                            "B": "Nur die Benutzeroberfläche",
+                            "C": "Sowohl bedingungslose als auch bedingte Codepfade",
+                            "D": "Ausschließlich die Performance",
+                        },
+                        "correct": "C",
+                        "explanation": "Der Zweigtest deckt zusätzlich auch bedingte Codepfade ab, nicht nur die reine Ausführung jeder Zeile.",
+                    },
+                    {
+                        "prompt": "In welchen Anwendungsbereichen sind White-Box-Testmethoden laut Präsentation besonders wichtig?",
+                        "options": {
+                            "A": "Nur bei einfachen internen Tools ohne besondere Anforderungen",
+                            "B": "In kritischen Systemen mit hohen Anforderungen an Zuverlässigkeit, Integrität und Sicherheit",
+                            "C": "Ausschließlich bei mobilen Apps",
+                            "D": "Ausschließlich bei Webanwendungen",
+                        },
+                        "correct": "B",
+                        "explanation": "Kritische Systeme mit hohen Anforderungen an Zuverlässigkeit, Integrität und Sicherheit sind der Hauptanwendungsbereich.",
+                    },
+                ],
+            },
+            {
+                "number": "5.4",
+                "title": "Erfahrungsbasierter Test",
+                "questions": [
+                    {
+                        "prompt": "Wann kommen erfahrungsbasierte Testmethoden besonders zum Einsatz?",
+                        "options": {
+                            "A": "Nur wenn die Spezifikation sehr detailliert ist",
+                            "B": "Wenn die Spezifikation unvollständig oder unklar ist und die Zeit für Tests begrenzt ist",
+                            "C": "Ausschließlich bei sequenziellen Entwicklungsmodellen",
+                            "D": "Nur nach Abschluss aller anderen Testtechniken",
+                        },
+                        "correct": "B",
+                        "explanation": "Gerade bei unvollständiger Spezifikation und Zeitdruck kommen erfahrungsbasierte Methoden zum Tragen.",
+                    },
+                    {
+                        "prompt": "Worauf basiert die intuitive Testfallermittlung (Fehlerraten)?",
+                        "options": {
+                            "A": "Auf zufällig generierten Testdaten",
+                            "B": "Ausschließlich auf automatisierten Tools",
+                            "C": "Auf dem Wissen über das bisherige Verhalten der Anwendung und typische Programmierfehler",
+                            "D": "Auf der internen Struktur des Quellcodes",
+                        },
+                        "correct": "C",
+                        "explanation": "Die intuitive Testfallermittlung stützt sich auf Wissen über bisheriges Anwendungsverhalten und typische Programmierfehler.",
+                    },
+                    {
+                        "prompt": "Was zeichnet den explorativen Test aus?",
+                        "options": {
+                            "A": "Tests werden lange im Voraus vollständig dokumentiert",
+                            "B": "Tests werden gleichzeitig entworfen, durchgeführt und bewertet, während der Tester die Anwendung erkundet",
+                            "C": "Es werden nur automatisierte Skripte verwendet",
+                            "D": "Es wird ausschließlich die interne Struktur des Codes betrachtet",
+                        },
+                        "correct": "B",
+                        "explanation": "Beim explorativen Test verschmelzen Testentwurf, -durchführung und -bewertung in einem Schritt während der Erkundung.",
+                    },
+                    {
+                        "prompt": "Worauf basieren Checklisten beim checklistenbasierten Test?",
+                        "options": {
+                            "A": "Ausschließlich auf gesetzlichen Vorschriften",
+                            "B": "Ausschließlich auf der Projektdauer",
+                            "C": "Auf Erfahrung, Wissen über Benutzererwartungen und Fehleranalysen",
+                            "D": "Ausschließlich auf der Teamgröße",
+                        },
+                        "correct": "C",
+                        "explanation": "Checklisten entstehen aus Erfahrung, Wissen über Benutzererwartungen und Fehleranalysen.",
+                    },
+                    {
+                        "prompt": "Welchen Nutzen bieten erfahrungsbasierte Testmethoden laut Fazit?",
+                        "options": {
+                            "A": "Sie ersetzen alle anderen Testtechniken vollständig",
+                            "B": "Sie ermöglichen eine schnelle Reaktion auf sich ändernde Bedingungen und effektive Fehlererkennung",
+                            "C": "Sie eliminieren die Notwendigkeit von Testdokumentation komplett",
+                            "D": "Sie funktionieren nur bei vollständig spezifizierten Anforderungen",
+                        },
+                        "correct": "B",
+                        "explanation": "Schnelle Reaktionsfähigkeit und effektive Fehlererkennung sind die zentralen Vorteile.",
+                    },
+                ],
+            },
+            {
+                "number": "5.5",
+                "title": "Auf Zusammenarbeit basierende Testansätze",
+                "questions": [
+                    {
+                        "prompt": "Wofür steht das dritte 'C' im '3 C'-Ansatz bei User Stories?",
+                        "options": {
+                            "A": "Confirmation (Akzeptanzkriterien)",
+                            "B": "Coding (Programmierung der Story)",
+                            "C": "Coverage (Testabdeckung der Story)",
+                            "D": "Communication (allgemeine Teamkommunikation)",
+                        },
+                        "correct": "A",
+                        "explanation": "Confirmation steht für die Akzeptanzkriterien, das dritte 'C' im 3-C-Ansatz (Card, Conversation, Confirmation).",
+                    },
+                    {
+                        "prompt": "In welcher Reihenfolge werden bei ATDD Testfälle und Implementierung erstellt?",
+                        "options": {
+                            "A": "Die Reihenfolge spielt bei ATDD keine Rolle, beides läuft parallel",
+                            "B": "Zuerst wird die User Story implementiert, danach werden passende Testfälle ergänzt",
+                            "C": "Testfälle werden vor der Implementierung der User Story erstellt",
+                            "D": "Testfälle entstehen automatisch aus dem fertigen Code",
+                        },
+                        "correct": "C",
+                        "explanation": "Bei ATDD ('Test-First'-Ansatz) werden die Testfälle vor der Implementierung der User Story erstellt.",
+                    },
+                    {
+                        "prompt": "Welches Format wird in der Präsentation genannt, um Abnahmekriterien präzise zu beschreiben?",
+                        "options": {
+                            "A": "UML-Aktivitätsdiagramme",
+                            "B": "Given/When/Then-Szenarien oder Checklisten",
+                            "C": "Reine Freitextbeschreibungen ohne festes Format",
+                            "D": "Entscheidungstabellen mit Wahrheitswerten",
+                        },
+                        "correct": "B",
+                        "explanation": "Given/When/Then-Szenarien oder Checklisten werden zur präzisen Beschreibung der Abnahmekriterien genutzt.",
+                    },
+                    {
+                        "prompt": "Wer erstellt laut Präsentation die Testfälle im Rahmen von ATDD?",
+                        "options": {
+                            "A": "Ausschließlich der Product Owner allein",
+                            "B": "Ein externes, unabhängiges Testteam nach Projektabschluss",
+                            "C": "Teammitglieder mit unterschiedlichen Perspektiven",
+                            "D": "Ein automatisiertes Tool ohne menschliches Zutun",
+                        },
+                        "correct": "C",
+                        "explanation": "Teammitglieder mit unterschiedlichen Perspektiven erstellen gemeinsam die Testfälle, was eine umfassendere Abdeckung ermöglicht.",
+                    },
+                    {
+                        "prompt": "Was ist laut Fazit ein zentraler Vorteil zusammenarbeitsbasierter Testansätze?",
+                        "options": {
+                            "A": "Sie verkürzen ausschließlich die Dauer der Entscheidungstabellentests",
+                            "B": "Sie reduzieren den Bedarf an Abnahmekriterien auf ein Minimum",
+                            "C": "Sie machen individuelle Reviews durch Gutachter überflüssig",
+                            "D": "Sie minimieren das Risiko von Defekten durch frühzeitige Einbindung der Stakeholder",
+                        },
+                        "correct": "D",
+                        "explanation": "Die frühzeitige Einbindung der Stakeholder minimiert das Risiko von Defekten.",
+                    },
+                ],
+            },
+        ]
+
+        _insert_chapters(lo4, chapters_data)
+
+
 def _insert_chapters(lo, chapters_data):
     """Hilfsfunktion: legt Kapitel + Fragen an, überspringt bereits vorhandene Kapitel."""
     for chapter_data in chapters_data:
@@ -524,4 +877,5 @@ if __name__ == "__main__":
     from app import app
     seed_lo1(app)
     seed_lo1_part2(app)
-    print("LO1 (alle Kapitel 2.1 - 2.7) erfolgreich eingespielt.")
+    seed_lo4(app)
+    print("LO1 (Kapitel 2.1-2.7) und LO4 (Kapitel 5.1-5.5) erfolgreich eingespielt.")
