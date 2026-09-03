@@ -1,7 +1,8 @@
 from flask import Flask, render_template, jsonify, request
-from models import db, LearningObjective, Question
+from models import db, LearningObjective, Question, MockExamAttempt
 from datetime import datetime
 import random
+import json
 
 
 MOCK_EXAM_DISTRIBUTION = {
@@ -232,8 +233,6 @@ def api_mock_exam_submit():
             lo_stats[lo.code]["correct"] += 1
             total_correct += 1
 
-    db.session.commit()
-
     lo_results = []
     for code in sorted(lo_stats.keys()):
         stat = lo_stats[code]
@@ -249,6 +248,17 @@ def api_mock_exam_submit():
     overall_percent = round((total_correct / total_questions) * 100, 2) if total_questions else 0
     passed = overall_percent >= MOCK_EXAM_PASS_PERCENT
 
+    # Versuch in der Datenbank speichern
+    attempt = MockExamAttempt(
+        total_correct=total_correct,
+        total_questions=total_questions,
+        overall_percent=overall_percent,
+        passed=passed,
+        lo_breakdown_json=json.dumps(lo_results),
+    )
+    db.session.add(attempt)
+    db.session.commit()
+
     return jsonify({
         "total_correct": total_correct,
         "total_questions": total_questions,
@@ -256,6 +266,31 @@ def api_mock_exam_submit():
         "passed": passed,
         "lo_results": lo_results,
     })
+
+
+@app.route("/mock-exam/history")
+def mock_exam_history_page():
+    return render_template("mock_exam_history.html")
+
+
+@app.route("/api/mock-exam/history")
+def api_mock_exam_history():
+    attempts = MockExamAttempt.query.order_by(MockExamAttempt.taken_at.desc()).all()
+
+    data = [
+        {
+            "id": a.id,
+            "taken_at": a.taken_at.strftime("%d.%m.%Y %H:%M"),
+            "total_correct": a.total_correct,
+            "total_questions": a.total_questions,
+            "overall_percent": a.overall_percent,
+            "passed": a.passed,
+            "lo_results": json.loads(a.lo_breakdown_json),
+        }
+        for a in attempts
+    ]
+
+    return jsonify(data)
 
 
 if __name__ == "__main__":
