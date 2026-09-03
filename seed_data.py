@@ -447,7 +447,445 @@ def seed_official_set_a(app):
         db.session.commit()
 
 
+def seed_official_set_b(app):
+    """Offizielle ISTQB CTFL v4.0 Sample Exam Paper - SET B (GTB edition), alle 40 Fragen."""
+    with app.app_context():
+        lo1 = _get_or_create_lo("LO1", "Grundlagen des Testens")
+        lo2 = _get_or_create_lo("LO2", "Testen im Softwareentwicklungslebenszyklus")
+        lo3 = _get_or_create_lo("LO3", "Statischer Test")
+        lo4 = _get_or_create_lo("LO4", "Testanalyse und -entwurf")
+        lo5 = _get_or_create_lo("LO5", "Management der Testaktivitäten")
+        lo6 = _get_or_create_lo("LO6", "Werkzeugunterstützung für das Testen")
+
+        def q(prompt, a, b, c, d, correct, explanation):
+            return {
+                "prompt": prompt,
+                "options": {"A": a, "B": b, "C": c, "D": d},
+                "correct": correct,
+                "explanation": explanation,
+            }
+
+        # ---------- LO1: Fragen 1-8 ----------
+        lo1_questions = [
+            q(
+                "Welche der folgenden Aussagen beschreibt am besten, warum Testen im Softwareentwicklungslebenszyklus notwendig ist?",
+                "Dynamisches Testen ist die einzige Möglichkeit, die Qualität eines Testobjekts zu bewerten.",
+                "Das Testen stellt sicher, dass die Benutzer die Bedürfnisse der Entwickler verstehen und nachvollziehen können.",
+                "Testen wird ausschließlich durchgeführt, um regulatorische Standards zu erfüllen.",
+                "Testen hilft, Fehlerzustände aufzudecken und damit die Qualität des Testobjekts zu verbessern.",
+                "D",
+                "Testen deckt Fehlerzustände auf, die anschließend durch Debugging behoben werden können, was die Qualität des Testobjekts insgesamt erhöht. Dynamisches Testen ist nur eines von mehreren Mitteln (neben Reviews, Inspektionen), nicht das einzige.",
+            ),
+            q(
+                "Welche der folgenden Aussagen ist zutreffend?",
+                "Qualitätssicherung ist ein korrektiver Ansatz",
+                "Testen ist eine Form der Qualitätssteuerung",
+                "Testen ist ein Synonym für Qualitätssteuerung",
+                "Qualitätssteuerung ist ein präventiver Ansatz",
+                "B",
+                "Testen ist eine der wichtigsten Formen der Qualitätssteuerung, aber nicht das einzige Mittel (auch formale Methoden wie Modellprüfung gehören dazu). Qualitätssicherung ist ein präventiver, Qualitätssteuerung ein korrigierender Ansatz - nicht umgekehrt.",
+            ),
+            q(
+                "Ein Tester hat über 5 Jahre Software auf mobilen Geräten getestet, dabei über lange Zeit weder bestehende Testfälle verändert noch neue erstellt. Bei neueren Plattform-Versionen wurden vermehrt Fehlerwirkungen von Nutzern gemeldet. Welchen Grundsatz des Testens hat der Tester nicht beachtet?",
+                "Testen ist abhängig vom Umfeld",
+                "Vollständiges Testen ist nicht möglich",
+                "Tests nutzen sich ab",
+                "Häufung von Fehlerzuständen",
+                "C",
+                "Unveränderte Tests werden mit der Zeit zunehmend ineffektiv beim Auffinden neuer Fehler ('Tests nutzen sich ab'). Um neue Fehlerzustände zu finden, hätten Testfälle und Testdaten regelmäßig angepasst und erweitert werden müssen.",
+            ),
+            q(
+                "Eine Testcharta legt Sitzungsdauer (1h), zu erforschenden Bereich (Registrierungsseite), Vorgehen (verschiedene fehlerhafte Eingabesätze) und zu entdeckende Fehler fest. In welcher Testaktivität wird dieses Testmittel erstellt?",
+                "Testplanung",
+                "Testüberwachung und -steuerung",
+                "Testanalyse",
+                "Testentwurf",
+                "D",
+                "Eine Testcharta ist eine Form des Testentwurfs speziell für exploratives Testen - sie legt fest, was, wie und wonach gesucht werden soll. Sie ist kein Testkonzept (Planung), kein Statusbericht (Überwachung) und keine reine Liste von Testbedingungen (Analyse).",
+            ),
+            q(
+                "Welcher der folgenden Aspekte beeinflusst AM EHESTEN die Durchführung von Tests für ein bestimmtes Testobjekt?",
+                "Die durchschnittliche Erfahrung des Marketingteams des Unternehmens",
+                "Das Wissen der Benutzer, dass ein neues System für sie entwickelt wird",
+                "Die Anzahl der Jahre an Testerfahrung der Mitglieder des Testteams",
+                "Die Organisationsstruktur der Benutzer der zu entwickelnden Anwendung",
+                "C",
+                "Die Testerfahrung des Teams bestimmt direkt die Fähigkeiten und das Wissen (z.B. über Tools und Fehlertypen), die beim eigentlichen Testen angewendet werden. Marketing-Erfahrung, Nutzerwissen über das Projekt und die Nutzer-Organisationsstruktur haben höchstens indirekten Einfluss über Anforderungen, nicht auf die Testdurchführung selbst.",
+            ),
+            q(
+                "Testaktivitäten: 1) Auswahl von Regressionstests, 2) Bewertung der Vollständigkeit der Testdurchführung, 3) Identifizieren, welche User-Storys offene Fehlerberichte haben, 4) Bewertung, ob Qualität/Anzahl der Tests zum Produktrisiko passt. Wie unterstützt Verfolgbarkeit (A-D) jeweils? A) Verständlichkeit von Statusberichten verbessern, B) Testaktivitäten nachvollziehbar machen, C) Informationen zur Prozessqualität liefern, D) Auswirkungen von Änderungen analysieren",
+                "1D, 2B, 3C, 4A",
+                "1B, 2D, 3A, 4C",
+                "1D, 2C, 3A, 4B",
+                "1D, 2B, 3A, 4C",
+                "D",
+                "Regressionstestauswahl basiert auf Änderungsanalyse (1D), Bewertung der Durchführungsvollständigkeit macht Tests nachvollziehbar (2B), das Identifizieren offener Fehlerberichte pro Story verbessert die Verständlichkeit von Statusberichten (3A), und die Risiko-Test-Abstimmung liefert Informationen zur Prozessqualität (4C).",
+            ),
+            q(
+                "Ein erfahrener Hubschrauberpilot wurde als Tester für ein Hubschrauber-Steuerungssystem eingestellt. Welche positive Auswirkung werden seine allgemeinen Kompetenzen AM EHESTEN auf das Testteam haben?",
+                "Die Anwendung von 3-Wert-Grenzwertanalyse für gründlicheren Testentwurf im Systemtest.",
+                "Inkonsistenzen und Ungenauigkeiten in den fachlichen Anforderungen werden effektiv aufgedeckt.",
+                "Einsatz eines Werkzeugs zur Automatisierung von Zustandsübergangstests.",
+                "Testergebnisse werden konstruktiver und defensiver an die Entwickler kommuniziert.",
+                "B",
+                "Das Fachwissen des Piloten (Anwendungsdomäne) hilft besonders dabei, Inkonsistenzen in den fachlichen Anforderungen effektiv zu erkennen. Testverfahren-Wissen, Automatisierungs-Know-how oder Kommunikationsfähigkeit lassen sich aus seiner Pilotenerfahrung nicht automatisch ableiten.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt einen Vorteil des Whole-Team-Ansatzes?",
+                "Er ermöglicht es den Teammitgliedern, jederzeit jede Rolle zu übernehmen.",
+                "Es wird nur ein Team benötigt, um das gesamte Entwicklungsprojekt zu unterstützen.",
+                "Tester können isoliert arbeiten, ohne Entwickler mit testspezifischen Informationen abzulenken.",
+                "Oft ergeben sich Synergien, von denen das gesamte Team und das Projekt profitieren.",
+                "D",
+                "Der Whole-Team-Ansatz nutzt die unterschiedlichen Fähigkeiten aller Teammitglieder optimal aus und fördert dadurch Teamdynamik, Kommunikation und Synergien, von denen das gesamte Projekt profitiert. Isoliertes Arbeiten der Tester widerspricht dem Grundgedanken.",
+            ),
+        ]
+
+        # ---------- LO2: Fragen 9-14 ----------
+        lo2_questions = [
+            q(
+                "Welche der folgenden Aussagen über die Wahl des Softwareentwicklungslebenszyklus und dessen Beziehung zum Testen ist KORREKT?",
+                "In der agilen Softwareentwicklung ersetzt die Automatisierung von Systemtests die Notwendigkeit von Regressionstests.",
+                "Wenn ein sequentielles Entwicklungsmodell verwendet wird, wird dynamisches Testen typischerweise in einer späteren Phase des Lebenszyklus durchgeführt.",
+                "Wenn ein iteratives Entwicklungsmodell verwendet wird, werden Komponententests typischerweise manuell von Entwicklern durchgeführt.",
+                "Wenn ein inkrementelles Entwicklungsmodell verwendet wird, werden statische Tests in frühen und dynamische Tests in späteren Inkrementen durchgeführt.",
+                "B",
+                "Bei sequenziellen Modellen steht in frühen Phasen noch kein ausführbarer Code zur Verfügung, weshalb dort statische Tests dominieren und dynamisches Testen erst später erfolgt. Bei agilen/iterativen/inkrementellen Modellen laufen statische und dynamische Tests dagegen in jeder Iteration bzw. jedem Inkrement parallel, nicht strikt getrennt nach Zeitpunkt.",
+            ),
+            q(
+                "Welche der folgenden Optionen ist eine gute Testpraktik, unabhängig vom gewählten Modell des Softwareentwicklungslebenszyklus?",
+                "Tester sollten die Arbeitsergebnisse einer Entwicklungsphase in der nächsten Entwicklungsphase überprüfen.",
+                "Tester sollten mit der Überprüfung der Arbeitsergebnisse einer Entwicklungsaktivität beginnen, sobald Entwürfe verfügbar sind.",
+                "Tester sollten Arbeitsergebnisse nur im Rahmen der Testanalyse und des Testentwurfs überprüfen.",
+                "Tester sollten Arbeitsergebnisse prüfen, sobald sie zur Nutzung freigegeben sind.",
+                "B",
+                "Frühes Prüfen von Arbeitsergebnissen, sobald Entwürfe verfügbar sind, entspricht dem Shift-Left-Prinzip und verhindert Folgefehler in nachgelagerten Aktivitäten - das gilt unabhängig vom SDLC-Modell. Warten bis zur nächsten Phase oder bis zur Freigabe wäre bereits zu spät.",
+            ),
+            q(
+                "Welches der folgenden Beispiele ist ein Test-First-Ansatz für die Entwicklung?",
+                "Testgetriebene Entwicklung",
+                "Überdeckungsgetriebene Entwicklung",
+                "Qualitätsgetriebene Entwicklung",
+                "Feature-getriebene Entwicklung",
+                "A",
+                "Testgetriebene Entwicklung (TDD) ist das klassische Beispiel eines Test-First-Ansatzes. Die anderen Begriffe beziehen sich entweder auf Überdeckungsmessung, allgemeine Qualitätsziele oder eine agile Feature-Liefermethodik - keiner davon ist ein Test-First-Ansatz.",
+            ),
+            q(
+                "Welche der folgenden Aussagen trifft auf DevOps zu?",
+                "Kontinuierliche Integration ermöglicht es Entwicklern, Code schnell und ohne Komponententests auszuliefern.",
+                "Um Systeme schneller aktualisieren und freigeben zu können, nutzt die DevOps-Lieferkette Automatisierung, um zeitaufwändige manuelle Regressionstests zu reduzieren.",
+                "Um die Kluft zwischen Entwicklung und Betrieb zu verringern, priorisiert das Testen mit einem Shift-Right-Ansatz den Abnahmetest parallel zur kontinuierlichen Auslieferung.",
+                "Um größere Synergie zwischen Testern, Entwicklern und Betrieb zu schaffen, werden Tests vollständig automatisiert, sodass keine manuellen Tests mehr nötig sind.",
+                "B",
+                "DevOps nutzt Automatisierung in der Auslieferungskette, um den Bedarf an sich wiederholenden manuellen Regressionstests zu reduzieren und das Regressionsrisiko zu minimieren. Komponententests bleiben trotz CI erforderlich, DevOps setzt eher auf Shift-Left statt Shift-Right, und manuelle Tests bleiben - besonders aus Nutzerperspektive - weiterhin nötig.",
+            ),
+            q(
+                "Welche der folgenden Maßnahmen wird im Rahmen von Systemtests AM EHESTEN durchgeführt?",
+                "End-to-End-Tests der IT-Sicherheit eines Kreditmanagementsystems durch ein unabhängiges Testteam.",
+                "Test des Zusammenwirkens eines Geldwechselsystems mit dem System einer externen Bank.",
+                "Beta-Test einer Lernplattform durch die Trainer eines Schulungsanbieters.",
+                "Test der Interaktion zwischen Benutzeroberfläche und Datenbank eines Personalverwaltungssystems.",
+                "A",
+                "Systemtests prüfen das Verhalten und die Fähigkeiten des gesamten Systems inklusive nicht-funktionaler Aspekte wie IT-Sicherheit, oft durch ein unabhängiges Team. Option B beschreibt einen Systemintegrationstest, C einen Abnahmetest (Beta-Test), D einen Komponentenintegrationstest.",
+            ),
+            q(
+                "Welche der folgenden Entscheidungen sollte KEIN Auslöser für Wartungstests sein?",
+                "Die Entscheidung, die Wartbarkeit der Software zu testen",
+                "Die Entscheidung, das System nach der Migration auf eine neue Betriebsplattform zu testen",
+                "Die Entscheidung, die Wiederherstellbarkeit archivierter Daten nach Außerbetriebnahme zu testen",
+                "Die Entscheidung zu testen, nachdem ein Hotfix auf die Produktivversion aufgespielt wurde",
+                "A",
+                "Wartbarkeit ist ein Qualitätsmerkmal, das nicht von der Codeausführung abhängt und daher kein typischer Auslöser für dynamische Wartungstests ist. Plattformmigration, Datenarchivierung/-wiederherstellung und Hotfixes sind dagegen klassische Auslöser für Wartungstests.",
+            ),
+        ]
+
+        # ---------- LO3: Fragen 15-18 ----------
+        lo3_questions = [
+            q(
+                "Welche der folgenden Aussagen beschreibt am BESTEN den Einsatz von statischem Test?",
+                "Statisches Testen kann Fehlerzustände aufdecken, die durch dynamisches Testen nicht gefunden werden können.",
+                "Fehlerzustände im Code können durch dynamische Tests effizienter gefunden werden als durch statische Tests.",
+                "Der statische Test kann erst in einer späten Phase des SDLC durchgeführt werden.",
+                "Um den statischen Test so effizient wie möglich zu gestalten, sollten so wenig Stakeholder wie möglich involviert sein.",
+                "A",
+                "Es gibt Fehlerzustände, die nur durch statisches Testen entdeckt werden können - das ist einer seiner zentralen Vorteile. Statische Tests sind oft sogar effizienter als dynamische, können schon sehr früh im SDLC eingesetzt werden, und profitieren von der Einbindung vieler Stakeholder (bessere Kommunikation).",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt einen Vorteil von frühem und häufigem Stakeholder-Feedback?",
+                "Es ermöglicht dem Projektmanagement, weniger produktive Entwickler frühzeitig zu identifizieren.",
+                "Es ermöglicht Projektmanagern, ihre Interaktionen mit Stakeholdern zu reduzieren.",
+                "Es erleichtert die frühzeitige Kommunikation potenzieller Qualitätsprobleme.",
+                "Endbenutzer verstehen besser, warum sich die Bereitstellung der Anwendung verzögert.",
+                "C",
+                "Frühzeitiges und häufiges Feedback erleichtert die frühe Kommunikation potenzieller Qualitätsprobleme und hilft, Missverständnisse bei Anforderungen zu vermeiden. Es geht dabei nicht um Personalbewertung oder Reduzierung von Stakeholder-Kontakt.",
+            ),
+            q(
+                "Review-Aufgaben: 1) Qualitätsmerkmale und Endekriterien festlegen, 2) Arbeitsergebnis allen Beteiligten zugänglich machen, 3) Anomalien im Arbeitsergebnis identifizieren, 4) Anomalien analysieren und diskutieren. Aktivitäten: A) Individuelles Review, B) Reviewbeginn, C) Planung, D) Kommunikation und Analyse. Welche Zuordnung ist korrekt?",
+                "1B, 2C, 3D, 4A",
+                "1B, 2D, 3C, 4A",
+                "1C, 2A, 3B, 4D",
+                "1C, 2B, 3A, 4D",
+                "D",
+                "Festlegung von Qualitätsmerkmalen und Endekriterien gehört zur Planung (1C), Zugänglichmachung des Arbeitsergebnisses zum Reviewbeginn (2B), Identifikation von Anomalien zum individuellen Review (3A), und Diskussion/Analyse der Anomalien zur Kommunikations- und Analysephase (4D).",
+            ),
+            q(
+                "Review-Rollen: 1) Protokollant, 2) Reviewleiter, 3) Moderator, 4) Manager. Verantwortlichkeiten: A) Sorgt für effektive Durchführung inkl. geschützter Umgebung, B) Zeichnet Entscheidungen und neue Anomalien auf, C) Entscheidet was geprüft wird und stellt Ressourcen bereit, D) Übernimmt Gesamtverantwortung, organisiert wann/wo. Welche Zuordnung ist korrekt?",
+                "1A, 2B, 3D, 4C",
+                "1A, 2C, 3B, 4D",
+                "1B, 2D, 3A, 4C",
+                "1B, 2D, 3C, 4A",
+                "C",
+                "Der Protokollant zeichnet Entscheidungen und Anomalien auf (1B), der Reviewleiter trägt die Gesamtverantwortung und organisiert das Review (2D), der Moderator sorgt für eine effektive, geschützte Sitzungsdurchführung (3A), und der Manager entscheidet über Prüfgegenstand und Ressourcen (4C).",
+            ),
+        ]
+
+        # ---------- LO4: Fragen 19-29 ----------
+        lo4_questions = [
+            q(
+                "Welche der folgenden Aussagen beschreibt KORREKT die Zuordnung von Verfahrensgrundlagen zu Entscheidungstabellen- und Zweigtests?",
+                "Beim Entscheidungstabellentest werden Testfälle aus den Entscheidungsergebnissen im Code abgeleitet; beim Zweigtest aus der Kenntnis des Kontrollflusses.",
+                "Beim Entscheidungstabellentest werden Testfälle aus der Spezifikation der Geschäftslogik abgeleitet; beim Zweigtest basieren sie auf der Antizipation potenzieller Fehler im Quellcode.",
+                "Beim Entscheidungstabellentest werden Testfälle aus der Kenntnis des Kontrollflusses abgeleitet; beim Zweigtest aus der Spezifikation der Geschäftslogik.",
+                "Beim Entscheidungstabellentest werden Testfälle unabhängig vom Zustand der Software abgeleitet; beim Zweigtest können Testfälle erst nach Entwurf/Implementierung des Codes erstellt werden.",
+                "D",
+                "Entscheidungstabellentest ist ein Black-Box-Verfahren (spezifikationsbasiert, implementierungsunabhängig), Zweigtest ein White-Box-Verfahren (strukturbasiert, kann erst nach Entwurf/Implementierung erstellt werden, da er die interne Codestruktur kennen muss).",
+            ),
+            q(
+                "Eine Waschanlagenkarte startet bei 0 Wäschen. Jede zehnte Wäsche gibt 10% Rabatt, jede zwanzigste zusätzlich 40% (insgesamt 50%). Welche Eingaben (Anzahl Wäschen) erreichen die höchste Überdeckung der Äquivalenzklassen?",
+                "19, 20, 30",
+                "11, 12, 20",
+                "1, 10, 50",
+                "10, 29, 30, 31",
+                "A",
+                "19 deckt 'kein Rabatt', 20 deckt '50% Rabatt' und 30 deckt '10% Rabatt' ab - damit sind alle drei Äquivalenzklassen mit nur drei Werten abgedeckt. Die anderen Optionen decken jeweils nur zwei der drei Klassen ab.",
+            ),
+            q(
+                "Ein Weinlager-Kontrollgerät meldet: 11≤T≤13 'optimal', T<11 'zu niedrig', T>13 'zu hoch' (T in ganzen °C). Mit 3-Wert-Grenzwertanalyse: Welche Testeingaben ergeben 100%ige Überdeckung?",
+                "11, 12, 13",
+                "9, 13, 15",
+                "9, 10, 11, 12, 13, 14, 15",
+                "10, 11, 12, 13, 14",
+                "C",
+                "Die Grenzen liegen bei 10/11 und 13/14. Bei der 3-Wert-Methode braucht man jeden Grenzwert plus je einen Nachbarn auf beiden Seiten: 9,10,11 (untere Grenze) und 12,13,14,15 (obere Grenze, da 13 auch Nachbar der unteren Grenze zur mittleren Klasse ist) - zusammen ergibt das genau die Werte 9 bis 15.",
+            ),
+            q(
+                "Eine Entscheidungstabelle zur Arteriosklerose-Risikobewertung hat 5 Regeln (Spalten) basierend auf Cholesterin- und Blutdruckwerten. Fünf Testfälle wurden entworfen. TC1/TC2 decken Regel 4 ab, TC3/TC4 decken Regel 2 ab, TC5 deckt Regel 5 ab. Welche Überdeckung der Entscheidungstabelle wird erreicht?",
+                "40%",
+                "60%",
+                "80%",
+                "100%",
+                "B",
+                "Die fünf Testfälle decken zusammen nur 3 von 5 Regeln (Spalten) ab (Regel 4, Regel 2, Regel 5) - Regel 1 und Regel 3 bleiben ungetestet. 3/5 × 100% = 60% Überdeckung.",
+            ),
+            q(
+                "Ein Zustandsübergangsdiagramm für ein Batterieladegerät hat die Zustände Warten, Erhaltungsladen, Laden (mit Unterzuständen Niedrig/Hoch) und Aus, mit 10 definierten gültigen Übergängen. Welcher Testfall enthält sowohl gültige als auch einen ungültigen Übergang: Start→Warten→Aus→Warten→Laden→Niedrig→Laden?",
+                "Start→Warten→Aus→Warten→Erhaltungsladen→Warten",
+                "Start→Warten→Erhaltungsladen→Laden→Hoch→Laden",
+                "Start→Warten→Erhaltungsladen→Laden→Niedrig→Laden",
+                "Start→Warten→Aus→Warten→Laden→Niedrig→Laden",
+                "D",
+                "Der Übergang Warten→Laden ist im Diagramm nicht als gültiger Übergang definiert - dieser Testfall enthält also neben mehreren gültigen Übergängen auch diesen einen ungültigen. Die anderen drei Testfälle durchlaufen ausschließlich gültige, im Diagramm definierte Übergänge.",
+            ),
+            q(
+                "Zwei Testfälle T1 und T2 für denselben Code: T1 erreicht 40% Anweisungsüberdeckung, T2 erreicht 65%. Welche Aussage ist aufgrund dieser Informationen KORREKT?",
+                "Die Testsuite aus T1 und T2 erreicht eine Anweisungsüberdeckung von 105%.",
+                "Mindestens eine Anweisung wurde sowohl von T1 als auch von T2 ausgeführt.",
+                "Mindestens 5% der Anweisungen im getesteten Code sind nicht ausführbar.",
+                "Die Testsuite aus T1 und T2 erreicht eine Zweigüberdeckung von 100%.",
+                "B",
+                "Da Überdeckung nie über 100% liegen kann, müssen sich T1 (40%) und T2 (65%) in mindestens 5 Prozentpunkten überschneiden - also mindestens eine Anweisung von beiden ausgeführt worden sein. Über nicht-ausführbare Anweisungen oder Zweigüberdeckung sagt die Anweisungsüberdeckung nichts aus.",
+            ),
+            q(
+                "Die Formel für Zweigüberdeckung lautet ZÜ = (X/Y) × 100%. Was bedeuten X und Y?",
+                "X = Anzahl ausgeführter Entscheidungsergebnisse, Y = Gesamtzahl der Entscheidungsergebnisse im Code",
+                "X = Anzahl durch Testfälle ausgeführter bedingter Zweige, Y = Gesamtzahl der Zweige im Code",
+                "X = Anzahl der von Testfällen ausgeführten Zweige, Y = Gesamtzahl der Zweige im Code",
+                "X = Anzahl ausgeführter bedingter Zweige, Y = Gesamtzahl der Entscheidungsergebnisse im Code",
+                "C",
+                "Zweigüberdeckung zählt ALLE Zweige (sowohl bedingte als auch unbedingte/geradlinige), nicht nur bedingte Entscheidungsergebnisse. X = ausgeführte Zweige, Y = alle Zweige im Code, als Prozentsatz ausgedrückt.",
+            ),
+            q(
+                "Welche der folgenden Aussagen liefert die BESTE Begründung für den effektiven Einsatz explorativer Tests?",
+                "Die bestehende Teststrategie fordert, dass Tester Black-Box-Testverfahren verwenden.",
+                "Die Spezifikation ist in einer formalen, werkzeugverarbeitbaren Sprache geschrieben.",
+                "Die Tester sind Mitglieder eines agilen Teams und verfügen über gute Programmierkenntnisse.",
+                "Die Tester haben Erfahrung in der Anwendungsdomäne und gute analytische Fähigkeiten.",
+                "D",
+                "Exploratives Testen ist besonders effektiv, wenn Tester über Domänenerfahrung sowie hohe analytische Fähigkeiten, Neugier und Kreativität verfügen. Formale, werkzeugverarbeitbare Spezifikationen sprechen eher für automatisierte/statische Ansätze, und Programmierkenntnisse allein sind kein Grund für explorative Tests.",
+            ),
+            q(
+                "Welches ist das BESTE Beispiel für eine Testbedingung bei checklistenbasierten Tests?",
+                "'Der Entwickler hat bei der Implementierung eine Fehlhandlung gemacht.'",
+                "'Die erreichte Anweisungsüberdeckung ist größer als 85%'",
+                "'Das Programm erfüllt die funktionalen und nicht-funktionalen Anforderungen korrekt'",
+                "'Die Fehlermeldungen des Systems sind für die Benutzer verständlich.'",
+                "D",
+                "Diese Bedingung ist konkret, direkt prüfbar und basiert auf Tester-Erfahrung darüber, was für Benutzer wichtig ist - genau das macht eine gute Checklisten-Testbedingung aus. Die anderen Optionen sind entweder zu vage, ein Endekriterium statt einer Testbedingung, oder eine allgemeine Vermutung ohne konkreten Prüfpunkt.",
+            ),
+            q(
+                "Ein Abnahmekriterium lautet: 'Angenommen der Benutzer ist eingeloggt und auf der Startseite. Wenn er auf Artikel hinzufügen klickt, dann erscheint das Formular Artikel anlegen, und er kann Namen und Preis eingeben.' In welchem Format ist dieses Kriterium geschrieben?",
+                "Regelorientiert",
+                "Szenario-orientiert",
+                "Produktorientiert",
+                "Prozessorientiert",
+                "B",
+                "Das Gegeben/Wenn/Dann-Format beschreibt ein konkretes zu verifizierendes Szenario und ist damit szenario-orientiert. 'Produktorientiert' und 'prozessorientiert' sind keine im Lehrplan definierten Formate für Abnahmekriterien.",
+            ),
+            q(
+                "User-Story: 'Als Trainer möchte ich die Spielberechtigungsliste im DFBNET für einen Spieltag abrufen, um den Kader zusammenzustellen.' Welcher Testfall eignet sich am BESTEN für ATDD dieser Story?",
+                "Login als Trainer; wähle die nächsten Spieltage aus; lade die Spielberechtigungslisten.",
+                "GEGEBEN: Als Trainer angemeldet UND nächster Spieltag ausgewählt. WENN 'Spielberechtigungsliste laden' gewählt wird, DANN wird die Liste der spielberechtigten Spieler angezeigt.",
+                "Login als Mannschaftsverantwortlicher; wähle den nächsten Spieltag; lade Liste; entferne nicht berechtigte Spieler.",
+                "GEGEBEN: Spieltage ausgewählt. WENN ein Spieltag gewählt UND die Liste geladen wird, DANN werden alle berechtigten Spieler angezeigt.",
+                "B",
+                "Dieser Testfall entspricht exakt der Story: Login als Trainer, ein Spieltag, Laden und Anzeigen der Berechtigungsliste. Option A lädt fälschlich mehrere Spieltage, Option C nennt die falsche Rolle (Mannschaftsverantwortlicher statt Trainer), und Option D berücksichtigt nicht die Trainer-Anmeldung, die die Story explizit fordert.",
+            ),
+        ]
+
+        # ---------- LO5: Fragen 30-38 ----------
+        lo5_questions = [
+            q(
+                "Ein Team nutzt eine CI/CD-Pipeline mit Shift-Left-Ansatz: (1) Code entwickeln/bereitstellen, (2) Code an Versionskontrolle übergeben und in 'Test'-Branch integrieren, (3) automatisierten Komponententest durchführen. Welches Kriterium eignet sich AM BESTEN als Eingangskriterium für Schritt (2)?",
+                "Die statische Analyse meldet für den übermittelten Code keine Fehler und keine Warnungen mit hohem Schweregrad.",
+                "Die Versionskontrolle meldet keine Konflikte beim Kompilieren und Integrieren in den 'Test'-Branch.",
+                "Die Komponententests sind kompiliert und lauffähig für den 'Test'-Branch verfügbar.",
+                "Die Anweisungsüberdeckung des Komponententests beträgt mindestens 80%.",
+                "A",
+                "Als Eingangskriterium VOR der Integration ist eine saubere statische Analyse sinnvoll und messbar, vergleichbar einem Smoke-Test. Konfliktmeldungen der Versionskontrolle können erst NACH der Integration geprüft werden, kompilierte Komponententests betreffen eher Schritt 3, und die Überdeckung ist eher ein Endekriterium für Schritt 3.",
+            ),
+            q(
+                "Bei einer Schätzung basierend auf Verhältniszahlen aus 4 historischen Projekten beträgt der durchschnittliche Entwicklungsaufwand 900.000€ und der durchschnittliche Testaufwand 90.000€ (Verhältnis 1:10). Der geschätzte Entwicklungsaufwand für ein neues Projekt beträgt 800.000€. Wie hoch ist der geschätzte Testaufwand?",
+                "40.000€",
+                "80.000€",
+                "81.250€",
+                "82.500€",
+                "B",
+                "Das Verhältnis Testaufwand:Entwicklungsaufwand beträgt 1:10 (10%). 10% von 800.000€ = 80.000€.",
+            ),
+            q(
+                "Testfälle mit Prioritäten (1=dringlichst) und Abhängigkeiten: T1 (Prio 3, keine), T2 (Prio 1, abhängig von T1), T3 (Prio 3, abhängig von T2), T4 (Prio 3, abhängig von T2), T5 (Prio 1, abhängig von T3), T6 (Prio 2, abhängig von T4). Welche Ausführungsreihenfolge berücksichtigt Abhängigkeiten UND Prioritäten korrekt?",
+                "T1→T2→T4→T5→T3→T6",
+                "T1→T2→T3→T4→T5→T6",
+                "T1→T2→T4→T3→T5→T6",
+                "T1→T2→T3→T5→T4→T6",
+                "D",
+                "T1 und T2 müssen zuerst (Abhängigkeitskette). T5 hat Priorität 1 und hängt von T3 ab, daher muss T3 vor T5 laufen - dies zuerst, noch vor dem gleich priorisierten T4. Danach T4, abschließend T6 (abhängig von T4).",
+            ),
+            q(
+                "Welches Element wird im Testquadrantenmodell dem Quadranten Q1 ('technologieorientiert' und 'Unterstützung des Teams') zugeordnet?",
+                "Gebrauchstauglichkeitstests",
+                "Smoke-Tests",
+                "Benutzerabnahmetests",
+                "Komponentenintegrationstests",
+                "D",
+                "Komponentenintegrationstests sind technologieorientiert und unterstützen das Entwicklungsteam - genau Q1. Gebrauchstauglichkeits- und Benutzerabnahmetests gehören zu Q3 (geschäftlich, Produktkritik), Smoke-Tests zu Q4 (technisch, Produktkritik).",
+            ),
+            q(
+                "Welche Aussage beschreibt die Beziehung zwischen Produktrisiko und Testplanung NICHT genau?",
+                "Hohe IT-Sicherheitsrisiken führten dazu, dass das Endekriterium für den Sicherheitstest auf 99 bestandene Testfälle erhöht wurde.",
+                "Die geforderte Qualität des Netzwerkmoduls ist unklar, was zu weiteren Risikoanalysen führen wird.",
+                "Nutzerprobleme mit der bestehenden Benutzungsschnittstelle führten zu zusätzlich geplanten Gebrauchstauglichkeitstests für das Nachfolgesystem.",
+                "Kritische Ladezeiten der neuen Website führten zum Einsatz eines Performanztest-Experten im Projekt.",
+                "B",
+                "Unklare Qualitätsanforderungen erfordern zwar weitere Risikoanalyse, das beschreibt aber keine konkrete, aus dem Risiko abgeleitete Testplanungs-Maßnahme im Sinne der Risikosteuerung - anders als die anderen drei Beispiele, die jeweils klare Reaktionen (höheres Endekriterium, mehr Tests, Experteneinsatz) auf identifizierte Risiken zeigen.",
+            ),
+            q(
+                "Welche der folgenden Kennzahlen ist eine Produktqualitätsmetrik?",
+                "Mittlere Betriebsdauer bis zum Ausfall (Mean Time to Failure)",
+                "Anzahl der aufgedeckten Fehlerzustände",
+                "Anforderungsüberdeckung",
+                "Fehlerdichte",
+                "A",
+                "Die mittlere Zeit bis zum Ausfall misst die Reife des Produkts und ist damit eine echte Produktqualitätsmetrik. Anzahl aufgedeckter Fehler und Fehlerdichte sind Fehlerzustandsmetriken, Anforderungsüberdeckung eine Überdeckungsmetrik.",
+            ),
+            q(
+                "Ein europäisches Testteam entwickelt für einen nordamerikanischen Kunden mit DevOps/CI-CD-Ansatz. Welche Kommunikationsmethode wäre angesichts der geografischen Entfernung am WENIGSTEN effektiv für den Testfortschritt?",
+                "Persönliche Treffen (von Angesicht zu Angesicht)",
+                "Interaktive Dashboards",
+                "E-Mail-Aktualisierungen",
+                "Videokonferenzen",
+                "A",
+                "Persönliche Treffen über große Entfernungen und Zeitzonen hinweg sind am schwierigsten zu organisieren. Dashboards sind jederzeit verfügbar, E-Mails und Videokonferenzen überbrücken Zeitzonenunterschiede deutlich praktikabler als physische Treffen.",
+            ),
+            q(
+                "Welche Aussage beschreibt ein Beispiel dafür, wie Konfigurationsmanagement (KM) das Testen unterstützt?",
+                "Über die Versionsnummer der Testumgebung kann das KM-Werkzeug die Versionsnummern der verwendeten Bibliotheken, Platzhalter und Treiber abrufen.",
+                "Die Änderung von Baselines wird durch KM-Werkzeuge flexibel unterstützt, wenn Tester dies für notwendig erachten.",
+                "Das Konfigurationsmanagement verfolgt Testskripte und Testfälle; Testergebnisse werden dagegen durch das Fehlermanagement verwaltet.",
+                "Komplexe Konfigurationselemente werden in einer Baseline zusammengefasst; ein Zurückgreifen auf frühere Baselines ist danach nicht mehr möglich.",
+                "A",
+                "KM erfasst für komplexe Konfigurationselemente wie Testumgebungen die Komponenten, ihre Beziehungen und Versionen. Baseline-Änderungen erfordern einen formalen Änderungsprozess (nicht 'flexibel nach Bedarf'), KM verfolgt auch Testergebnisse, und ein Rückgriff auf frühere Baselines ist grundsätzlich möglich.",
+            ),
+            q(
+                "Ein Sortierfunktions-Test zeigt: TC3, TC4, TC5 schlagen fehl, wobei jeweils Duplikate in der Eingabe (z.B. mehrfache -2 oder 4) im Ergebnis nur einmal erscheinen. Welche Fehlerbeschreibung eignet sich am BESTEN für den Fehlerbericht?",
+                "Das System kann mehrere Zahlensätze nicht sortieren. Referenz: TC3, TC4, TC5.",
+                "Das System scheint Duplikate beim Sortieren zu ignorieren. Referenz: TC3, TC4, TC5.",
+                "Das System kann keine negativen Zahlen sortieren. Referenz: TC4, TC5.",
+                "TC3, TC4 und TC5 sind fehlerhaft (doppelte Eingabedaten) und sollten korrigiert werden.",
+                "B",
+                "Die Beobachtung zeigt konkret, dass Duplikate ignoriert und nur einmal zurückgegeben werden - das ist die präzise, für Entwickler nützliche Ursachenbeschreibung. Negative Zahlen werden korrekt einsortiert (nicht das Problem), und die Testfälle selbst sind nicht fehlerhaft, da Duplikate in der Spezifikation nicht ausgeschlossen sind.",
+            ),
+        ]
+
+        # ---------- LO6: Fragen 39-40 ----------
+        lo6_questions = [
+            q(
+                "Beschreibungen: 1) Unterstützung der Workflow-Verfolgung, 2) Kommunikation erleichtern, 3) virtuelle Maschinen, 4) Unterstützung von Review-Auswertungen. Kategorien: A) Statische Testwerkzeuge, B) Werkzeuge für Skalierbarkeit/Standardisierung, C) DevOps-Werkzeuge, D) Werkzeuge für Zusammenarbeit. Welche Zuordnung passt am BESTEN?",
+                "1A, 2B, 3C, 4D",
+                "1B, 2D, 3C, 4A",
+                "1C, 2D, 3B, 4A",
+                "1D, 2C, 3A, 4B",
+                "C",
+                "DevOps-Werkzeuge unterstützen u.a. die Workflow-Verfolgung (1C), Werkzeuge für Zusammenarbeit erleichtern Kommunikation (2D), virtuelle Maschinen fallen unter Skalierbarkeit/Standardisierung (3B), und statische Testwerkzeuge unterstützen Review-Auswertungen (4A).",
+            ),
+            q(
+                "Welcher der folgenden Vorteile trifft AM EHESTEN auf die Testautomatisierung zu?",
+                "Die Testautomatisierung ermöglicht auch die Messung komplexerer Überdeckungskriterien.",
+                "Durch die Testautomatisierung wird ein Teil der Verantwortung für das Testen dem Werkzeuganbieter übertragen.",
+                "Die Testautomatisierung macht kritisches Denken bei der Analyse von Testergebnissen überflüssig.",
+                "Testautomatisierung generiert Testfälle auf Systemebene aus einer Analyse des Programmcodes.",
+                "A",
+                "Automatisierung kann Überdeckungsmaße liefern, die für Menschen zu komplex zu berechnen wären (z.B. White-Box-Überdeckung bei nicht-trivialem Code). Die Testverantwortung bleibt beim Tester, kritisches Denken bei der Ergebnisanalyse bleibt unverzichtbar, und Systemtestfälle lassen sich nicht allein aus Code-Analyse generieren, da erwartete Ergebnisse aus der Spezifikation stammen müssen.",
+            ),
+        ]
+
+        chapter_map = [
+            (lo1, "OFF-B-LO1", "Offizielle Prüfung SET B - LO1", lo1_questions),
+            (lo2, "OFF-B-LO2", "Offizielle Prüfung SET B - LO2", lo2_questions),
+            (lo3, "OFF-B-LO3", "Offizielle Prüfung SET B - LO3", lo3_questions),
+            (lo4, "OFF-B-LO4", "Offizielle Prüfung SET B - LO4", lo4_questions),
+            (lo5, "OFF-B-LO5", "Offizielle Prüfung SET B - LO5", lo5_questions),
+            (lo6, "OFF-B-LO6", "Offizielle Prüfung SET B - LO6", lo6_questions),
+        ]
+
+        for lo, number, title, questions in chapter_map:
+            existing = Chapter.query.filter_by(number=number).first()
+            if existing:
+                continue
+
+            chapter = Chapter(lo_id=lo.id, number=number, title=title)
+            db.session.add(chapter)
+            db.session.flush()
+
+            for qd in questions:
+                question = Question(
+                    chapter_id=chapter.id,
+                    prompt=qd["prompt"],
+                    option_a=qd["options"]["A"],
+                    option_b=qd["options"]["B"],
+                    option_c=qd["options"]["C"],
+                    option_d=qd["options"]["D"],
+                    correct_option=qd["correct"],
+                    explanation=qd["explanation"],
+                    source="official_mock",
+                )
+                db.session.add(question)
+
+        db.session.commit()
+
+
 if __name__ == "__main__":
     from app import app
     seed_official_set_a(app)
-    print("Offizielle Prüfungsfragen (SET A) erfolgreich eingespielt.")
+    seed_official_set_b(app)
+    print("Offizielle Prüfungsfragen (SET A + SET B) erfolgreich eingespielt.")
