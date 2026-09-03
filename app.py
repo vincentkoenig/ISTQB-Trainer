@@ -1,6 +1,7 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from models import db, LearningObjective, Question
 from datetime import datetime
+
 
 def create_app():
     app = Flask(__name__)
@@ -16,8 +17,10 @@ def create_app():
     return app
 
 
-app = create_app()   # <-- WICHTIG: das muss VOR den @app.route-Definitionen stehen
+app = create_app()
 
+
+# ---------- Dashboard ----------
 
 @app.route("/")
 def dashboard():
@@ -45,6 +48,58 @@ def api_dashboard():
         })
 
     return jsonify(data)
+
+
+# ---------- Übungsseite ----------
+
+@app.route("/practice/<int:lo_id>")
+def practice_page(lo_id):
+    return render_template("practice.html", lo_id=lo_id)
+
+
+@app.route("/api/practice/<int:lo_id>")
+def api_practice_questions(lo_id):
+    lo = LearningObjective.query.get_or_404(lo_id)
+
+    due_questions = []
+    for chapter in lo.chapters:
+        for q in chapter.questions:
+            if q.next_review <= datetime.utcnow():
+                due_questions.append(q)
+
+    data = [
+        {
+            "id": q.id,
+            "prompt": q.prompt,
+            "options": {
+                "A": q.option_a,
+                "B": q.option_b,
+                "C": q.option_c,
+                "D": q.option_d,
+            },
+            "box": q.box,
+        }
+        for q in due_questions
+    ]
+
+    return jsonify({"lo_title": lo.title, "questions": data})
+
+
+@app.route("/api/answer/<int:question_id>", methods=["POST"])
+def api_submit_answer(question_id):
+    question = Question.query.get_or_404(question_id)
+    selected = request.json.get("selected")
+
+    was_correct = (selected == question.correct_option)
+    question.register_answer(was_correct)
+    db.session.commit()
+
+    return jsonify({
+        "correct": was_correct,
+        "correct_option": question.correct_option,
+        "explanation": question.explanation,
+        "new_box": question.box,
+    })
 
 
 if __name__ == "__main__":
