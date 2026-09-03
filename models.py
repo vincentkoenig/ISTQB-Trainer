@@ -58,6 +58,7 @@ class Question(db.Model):
     option_d = db.Column(db.Text, nullable=False)
     correct_option = db.Column(db.String(1), nullable=False)  # "A" / "B" / "C" / "D"
     explanation = db.Column(db.Text)
+    source = db.Column(db.String(50), default="practice", nullable=False)  # "practice" oder "official_mock"
 
     # Leitner-System-Felder
     box = db.Column(db.Integer, default=1, nullable=False)
