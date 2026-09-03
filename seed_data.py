@@ -1294,9 +1294,403 @@ def seed_official_set_c(app):
 
         db.session.commit()
 
+
+def seed_official_set_d(app):
+    """Offizielle ISTQB CTFL v4.0 Sample Exam Paper - SET D (GTB edition), 35 von 40 Fragen
+    (Fragen 8, 20, 30, 35, 39 = Mehrfachauswahl, aktuell nicht abbildbar)."""
+    with app.app_context():
+        lo1 = _get_or_create_lo("LO1", "Grundlagen des Testens")
+        lo2 = _get_or_create_lo("LO2", "Testen im Softwareentwicklungslebenszyklus")
+        lo3 = _get_or_create_lo("LO3", "Statischer Test")
+        lo4 = _get_or_create_lo("LO4", "Testanalyse und -entwurf")
+        lo5 = _get_or_create_lo("LO5", "Management der Testaktivitäten")
+        lo6 = _get_or_create_lo("LO6", "Werkzeugunterstützung für das Testen")
+
+        def q(prompt, a, b, c, d, correct, explanation):
+            return {
+                "prompt": prompt,
+                "options": {"A": a, "B": b, "C": c, "D": d},
+                "correct": correct,
+                "explanation": explanation,
+            }
+
+        # ---------- LO1: 7 Fragen (Frage 8 ausgelassen - Mehrfachauswahl) ----------
+        lo1_questions = [
+            q(
+                "Welche der folgenden Aussagen beschreibt ein typisches Ziel von Softwaretests?",
+                "Fehler im Testobjekt identifizieren und beheben.",
+                "Eine effektive Kommunikation mit dem Entwicklungsteam sicherstellen.",
+                "Nachweisen, dass gesetzliche Vorgaben umgesetzt wurden.",
+                "Vertrauen in die Qualität des Testobjekts aufbauen.",
+                "D",
+                "Vertrauen in die Qualität wird durch bestandene Tests aufgebaut - ein klassisches Testziel. Das Beheben von Fehlern gehört nicht zum Testen selbst (das ist Debugging), Kommunikation ist eher Mittel zum Zweck, und Nachweis gesetzlicher Konformität ist eher Verifizierung als eigenständiges Hauptziel.",
+            ),
+            q(
+                "Ein Designer übersieht wegen Müdigkeit die Bedürfnisse behinderter Nutzer beim UI-Design. Ein Entwickler verzichtet aus Zeitdruck auf Ausnahmebehandlung bei Bonusberechnungen. Nach Einführung beschweren sich Nutzer über Barrierefreiheit, das Unternehmen wird mit Geldstrafe belegt. Der Bonusfehler bleibt zunächst unbemerkt. Welche Aussage IST KORREKT?",
+                "Die fehlerhafte Bonusberechnung ist ein sporadisch auftretender Fehlerzustand.",
+                "Die verhängte Geldstrafe wegen mangelnder Barrierefreiheit stellt einen Ausfall dar.",
+                "Der Zeitdruck, unter dem der Entwickler stand, ist eine wesentliche Ursache.",
+                "Das Design enthält eine offensichtliche Fehlerwirkung des Designers.",
+                "C",
+                "Der Zeitdruck des Entwicklers ist die eigentliche Grundursache (root cause) für den nachfolgenden Programmierfehler. Die Geldstrafe selbst ist kein Software-Ausfall, sondern eine externe Konsequenz. Das Design-Dokument enthält einen Fehlerzustand, keine Fehlerwirkung (die zeigt sich erst im Betrieb).",
+            ),
+            q(
+                "Tester leiten aus denselben Testbedingungen jeweils unterschiedliche Testfälle ab. Welcher Grundsatz des Testens wird dadurch am besten verdeutlicht?",
+                "Tests nutzen sich ab.",
+                "'Keine Fehler' bedeutet ein brauchbares System.",
+                "Frühes Testen spart Zeit und Geld.",
+                "Fehlerzustände treten gehäuft auf.",
+                "A",
+                "Indem aus denselben Testbedingungen jeweils neue, unterschiedliche Testfälle abgeleitet werden, wird verhindert, dass Tests durch Wiederholung an Wirksamkeit verlieren - das adressiert direkt den Grundsatz 'Tests nutzen sich ab'.",
+            ),
+            q(
+                "Gegeben sind Testaufgaben (1-4: Testfälle aus Testbedingungen ableiten, Wiederverwendbare Testware identifizieren, Testfälle in Testabläufen organisieren, Testbasis und Testobjekt bewerten) und Aktivitäten (A-D: Testanalyse, Testentwurf, Testrealisierung, Testabschluss). Welche Zuordnung passt AM BESTEN?",
+                "1B, 2A, 3D, 4C",
+                "1B, 2D, 3C, 4A",
+                "1C, 2A, 3B, 4D",
+                "1C, 2D, 3A, 4B",
+                "B",
+                "Testfälle aus Testbedingungen ableiten gehört zum Testentwurf (1B), wiederverwendbare Testware identifizieren zum Testabschluss (2D), Testfälle in Testabläufen organisieren zur Testrealisierung (3C), und Testbasis/Testobjekt bewerten zur Testanalyse (4A).",
+            ),
+            q(
+                "Welche der folgenden Optionen ist das beste Beispiel für Testware, die im Rahmen der Testrealisierung erstellt wird?",
+                "Testabschlussbericht",
+                "Testdaten für Eingaben und erwartete Ergebnisse in einer Datenbank",
+                "Liste der Komponenten zur Einrichtung der Testumgebung",
+                "Testfälle",
+                "B",
+                "Testdaten für Eingaben und erwartete Ergebnisse entstehen typischerweise während der Testrealisierung. Der Testabschlussbericht gehört zum Testabschluss, die Testumgebungsliste zum Testentwurf, und Testfälle selbst werden ebenfalls im Testentwurf erstellt - nicht in der Realisierung.",
+            ),
+            q(
+                "Welche der folgenden Optionen beschreibt AM BESTEN eine typische Aufgabe einer Person in der Testmanagementrolle?",
+                "Bewertung von Testbasis und Testobjekt",
+                "Definition der Anforderungen an die Testumgebung",
+                "Bewertung der Testbarkeit des Testobjekts",
+                "Erstellung des Testabschlussberichts",
+                "D",
+                "Die Erstellung des Testabschlussberichts ist eine Kernaufgabe der Testmanagementrolle im Rahmen des Testabschlusses. Die anderen drei Optionen gehören zur Testanalyse bzw. zum Testentwurf und sind eher Aufgaben der operativen Testrolle.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt einen Vorteil des Whole-Team-Ansatzes?",
+                "Verbesserte Kommunikation im Team",
+                "Geringere individuelle Verantwortung für Qualität",
+                "Schnellere Bereitstellung von Ergebnissen für Endbenutzer",
+                "Weniger Zusammenarbeit mit externen Geschäftsnutzern",
+                "A",
+                "Der Whole-Team-Ansatz fördert robuste Kommunikation und Zusammenarbeit zwischen Teammitgliedern. Die individuelle Verantwortung für Qualität bleibt trotz kollektiver Verantwortung erhalten, schnellere Auslieferung ist kein garantierter Effekt, und die Zusammenarbeit mit Geschäftsnutzern wird eher gestärkt als reduziert.",
+            ),
+        ]
+
+        # ---------- LO2: 6 Fragen ----------
+        lo2_questions = [
+            q(
+                "Welche der folgenden Optionen ist eine bewährte Testpraxis, die auf alle Softwareentwicklungslebenszyklen angewendet wird?",
+                "Jede Teststufe verfolgt eigene, eindeutig definierte Testziele.",
+                "Testrealisierung und -ausführung sollten während der jeweiligen Entwicklungsphase beginnen.",
+                "Mit dem Testentwurf sollte begonnen werden, sobald erste Entwürfe verfügbar sind.",
+                "Für jede dynamische Testaktivität gibt es eine entsprechende statische Aktivität.",
+                "A",
+                "Jede Teststufe hat spezifische, eindeutige Testziele, um Überschneidungen und unnötige Duplizierung zu vermeiden. Testrealisierung/-ausführung beginnen meist erst später, Testentwurf braucht eine stabile Testbasis (nicht frühe, noch veränderliche Entwürfe), und es gibt keine strikte 1:1-Symmetrie zwischen statischen und dynamischen Aktivitäten.",
+            ),
+            q(
+                "Welche der folgenden Optionen ist ein Beispiel für testgetriebene Entwicklung?",
+                "Verhaltensgetriebene Entwicklung",
+                "Teststufengetriebene Entwicklung",
+                "Funktionsgetriebene Entwicklung",
+                "Performanzgetriebene Entwicklung",
+                "A",
+                "Verhaltensgetriebene Entwicklung (BDD) ist ein anerkanntes Beispiel für einen testgetriebenen Ansatz. Die anderen drei Begriffe sind keine im Lehrplan definierten Test-First-Methoden.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt AM BESTEN eine typische Herausforderung bei der Einführung von DevOps?",
+                "Sicherstellen, dass nicht-funktionale Anforderungen ausreichend berücksichtigt werden.",
+                "Umgang mit häufig wechselnden Testumgebungen.",
+                "Bedarf an zusätzlichen manuellen Testern mit spezieller Erfahrung.",
+                "Integration der Testautomatisierung in die Bereitstellungspipeline.",
+                "D",
+                "Das Einrichten und Warten der Testautomatisierung als integralen Bestandteil der Bereitstellungspipeline (inkl. CI/CD-Tools) ist eine zentrale DevOps-Herausforderung. DevOps erhöht eher die Sichtbarkeit nicht-funktionaler Merkmale, stabilisiert Testumgebungen und reduziert tendenziell den Bedarf an manuellen Tests statt ihn zu erhöhen.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt den Zweck von Retrospektiven AM BESTEN?",
+                "Retrospektiven dienen dazu, Beiträge einzelner Teammitglieder kritisch zu bewerten.",
+                "Retrospektiven ermöglichen es dem Team, erfolgreiche Aktivitäten zu identifizieren, um sie künftig beizubehalten.",
+                "Retrospektiven bieten Raum für das Ansprechen von Bedenken gegenüber dem Management in geschütztem Rahmen.",
+                "Retrospektiven sind Sitzungen, in denen das Team technische Entscheidungen für die nächste Iteration trifft.",
+                "B",
+                "Retrospektiven geben dem Team die Möglichkeit, erfolgreiche Praktiken zu identifizieren und beizubehalten sowie Verbesserungspotenzial zu erkennen. Sie dienen nicht der Personenbewertung, nicht primär der Management-Kritik und nicht der technischen Entscheidungsfindung (das gehört zur Iterationsplanung).",
+            ),
+            q(
+                "Welcher der folgenden Tests gehört AM EHESTEN zu den Funktionstests?",
+                "Der Test überprüft, ob die Sortierfunktion eine Liste korrekt in aufsteigender Reihenfolge sortiert.",
+                "Der Test überprüft, ob die Sortierfunktion das Sortieren innerhalb einer Sekunde abschließt.",
+                "Der Test überprüft, wie einfach sich die Sortierfunktion auf absteigende Sortierung umstellen lässt.",
+                "Der Test überprüft, ob die Sortierfunktion auch auf einer 64-Bit-Architektur korrekt funktioniert.",
+                "A",
+                "Die Prüfung der korrekten Sortierfunktionalität ist ein klassischer Funktionstest. Zeitmessung ist ein Performanztest, Änderbarkeit ein Wartbarkeitstest, und Architektur-Kompatibilität ein Portabilitätstest - alle drei nicht-funktional.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt AM EHESTEN einen typischen Auslöser für Wartungstests eines Währungsumtauschsystems?",
+                "Entwickler berichteten über Schwierigkeiten bei Änderungen am System, das Testteam leitete eine technische Überprüfung ein.",
+                "Die Rückerstattungsoption wurde entfernt, da sie Kunden nicht immer den richtigen Betrag zurückzahlte.",
+                "Das agile Team begann mit der Implementierung einer neuen Kundenbindungsfunktion.",
+                "Die Sprachunterstützung wurde erweitert, um Transaktionen in Englisch und der Landessprache zu ermöglichen.",
+                "B",
+                "Eine Korrektur am bestehenden System (Entfernen einer fehlerhaften Funktion) ist ein klassischer Auslöser für Wartungstests. Schwierigkeiten bei Änderungen würden zu Wartbarkeitstests führen, eine neue Funktion zu regulären Funktions-/Regressionstests, und Spracherweiterung ist keiner der drei Hauptauslöser (Änderung, Migration, Außerbetriebnahme).",
+            ),
+        ]
+
+        # ---------- LO3: 4 Fragen ----------
+        lo3_questions = [
+            q(
+                "Welches der folgenden Artefakte kann NICHT durch statisches Testen untersucht werden?",
+                "Vertrag",
+                "Testkonzept",
+                "Verschlüsselter Code",
+                "Test-Charta",
+                "C",
+                "Verschlüsselter Code ist für Menschen nicht interpretierbar und für statische Analysewerkzeuge ungeeignet, solange er korrekt verschlüsselt ist. Verträge, Testkonzepte und Test-Chartas sind dagegen für Menschen lesbare Arbeitsergebnisse, die klassisch per Review geprüft werden können.",
+            ),
+            q(
+                "Welche der folgenden Aussagen beschreibt den Wert des statischen Testens AM BESTEN?",
+                "Die bei statischen Tests gefundenen Fehlertypen unterscheiden sich von denen, die durch dynamische Tests gefunden werden können.",
+                "Dynamische Tests können alle Fehler erkennen, die auch bei statischen Tests gefunden werden, sowie weitere.",
+                "Dynamische Tests erkennen einige, aber nicht alle Fehler, die durch statische Tests gefunden werden können.",
+                "Statische Tests können alle Fehler erkennen, die durch dynamische Tests gefunden werden, sowie zusätzliche.",
+                "C",
+                "Dynamische Tests finden nur Fehler, die bei tatsächlicher Ausführung auftreten - rein strukturelle oder dokumentationsbezogene Mängel (typische Stärke statischer Tests) bleiben ihnen verborgen. Das beschreibt die Komplementarität am treffendsten. Statische Tests können umgekehrt keine reinen Laufzeitfehler wie Division durch Null erkennen.",
+            ),
+            q(
+                "Fünf Review-Aktivitäten: 1) Anomalien diskutieren und Status/Zuständigkeit bewerten, 2) Probleme erfassen und Anpassungen vor Abnahme vornehmen, 3) Gutachter entwickeln Vorschläge/Fragen und identifizieren Anomalien, 4) Ziel und Zeitplan definieren, 5) Teilnehmende erhalten Zugriff auf das Dokument. Welche Reihenfolge entspricht dem korrekten Reviewprozess?",
+                "4 – 3 – 5 – 2 – 1",
+                "4 – 5 – 3 – 1 – 2",
+                "5 – 4 – 1 – 3 – 2",
+                "5 – 4 – 3 – 2 – 1",
+                "B",
+                "Die korrekte Reihenfolge ist: Planung (4) → Reviewbeginn (5) → Individuelles Review (3) → Kommunikation und Analyse (1) → Behebung und Berichterstattung (2). Planung muss immer zuerst kommen, danach der Zugriff auf das Dokument, dann die individuelle Anomalienerkennung, gefolgt von Diskussion und abschließender Behebung.",
+            ),
+            q(
+                "Welcher Teilnehmer im Reviewprozess ist dafür verantwortlich, sicherzustellen, dass die Reviewsitzungen effektiv verlaufen und jeder Teilnehmer seine Meinung frei äußern kann?",
+                "Manager",
+                "Moderator",
+                "Vorsitzender",
+                "Reviewleiter",
+                "B",
+                "Der Moderator sorgt für effektive Sitzungsdurchführung, Zeitmanagement und eine geschützte Umgebung für freie Meinungsäußerung. Der Manager entscheidet über Prüfgegenstand und Ressourcen, der Reviewleiter organisiert das Review insgesamt, und 'Vorsitzender' ist keine im Lehrplan definierte Rolle.",
+            ),
+        ]
+
+        # ---------- LO4: 10 Fragen (Frage 20 ausgelassen - Mehrfachauswahl) ----------
+        lo4_questions = [
+            q(
+                "Anforderung: 'Wenn die Gesamtkosten der Einkäufe 100€ überschreiten, erhält der Kunde 5% Rabatt auf zukünftige Einkäufe, sonst keinen Rabatt.' Welches Testverfahren eignet sich AM BESTEN zur Ableitung von Testfällen?",
+                "White-Box-Testverfahren",
+                "Black-Box-Testverfahren",
+                "Erfahrungsbasierte Testverfahren",
+                "Risikobasierte Testverfahren",
+                "B",
+                "Die Anforderung beschreibt spezifiziertes Verhalten mit klarer Geschäftsregel ('übersteigt 100€') - ideal für Black-Box-Verfahren wie Grenzwertanalyse oder Entscheidungstabellentest. White-Box passt nicht (kein Bezug zur Codestruktur), erfahrungsbasiert ist weniger präzise geeignet, und 'risikobasiert' ist keine eigenständige Testverfahren-Kategorie, sondern eine Priorisierungsstrategie.",
+            ),
+            q(
+                "Kühlanlagen-Temperaturüberwachung: 0-2°C (einschließlich) = 'Temperatur OK', unter 0°C = 'zu niedrig', über 2°C = 'zu hoch'. Welches Set von Testeingaben liefert mit 2-Wert-Grenzwertanalyse DIE VOLLSTÄNDIGSTE Grenzwertüberdeckung?",
+                "-1, 3",
+                "0, 2",
+                "-1, 0, 2, 3",
+                "-2, 0, 2, 4",
+                "C",
+                "Die drei Äquivalenzklassen sind {...,-2,-1}, {0,1,2}, {3,4,...}. Die relevanten Grenzwerte sind -1, 0, 2 und 3 - genau diese vier Werte deckt Option C vollständig ab. Die anderen Optionen lassen jeweils Grenzwerte einer Klasse aus oder wählen Werte, die nicht die direkten Nachbarn der Grenzen sind.",
+            ),
+            q(
+                "Entscheidungstabelle mit 7 Regeln zu Altersgruppe/Erfahrung/Registrierung und Kategorien A-D. Vier Testfälle decken bereits die Regeln R2, R3, R6, R7 ab. Welcher zusätzliche Testfall erhöht die Überdeckung? (66-jähriger, nicht registrierter Mann ohne Erfahrung → Kategorie B, entspricht Regel R4)",
+                "66-jähriger, nicht registrierter Mann ohne Erfahrung; erwartetes Ergebnis: Kategorie B.",
+                "55-jährige, nicht registrierte Frau mit 2 Jahren Erfahrung; erwartetes Ergebnis: Kategorie A.",
+                "19-jährige, registrierte Frau mit 5 Jahren Erfahrung; erwartetes Ergebnis: Kategorie D.",
+                "Kein zusätzlicher Testfall kann die bereits erreichte Überdeckung erhöhen.",
+                "A",
+                "Dieser Testfall deckt Regel R4 ab, die von den vier bestehenden Testfällen (R2, R3, R6, R7) noch nicht abgedeckt ist. Die anderen Optionen entsprechen bereits abgedeckten Regeln, und da erst 4 von 7 Regeln abgedeckt sind, ist eine Erhöhung der Überdeckung definitiv möglich.",
+            ),
+            q(
+                "Zimmerreservierungssystem mit Zuständen S1(Anfordern), S2(Bestätigt), S3(Warteliste), S4(Ende). Übergänge: S1→S2(Verfügbar), S1→S3(Nicht verfügbar), S2→S1(Zimmer wechseln), S2→S4(Stornieren), S2→S4(Bezahlen), S3→S2(Verfügbar), S3→S4(Stornieren) - 7 gültige Übergänge insgesamt. Alle Testfälle starten bei S1. Welche Ereignisfolge erreicht die GRÖSSTMÖGLICHE Überdeckung gültiger Übergänge?",
+                "Nicht verfügbar, Verfügbar, Zimmer wechseln, Nicht verfügbar, Stornieren",
+                "Verfügbar, Zimmer wechseln, Nicht verfügbar, Verfügbar, Bezahlen",
+                "Verfügbar, Zimmer wechseln, Verfügbar, Zimmer wechseln, Nicht verfügbar",
+                "Nicht verfügbar, Stornieren, Zimmer wechseln, Verfügbar, Bezahlen",
+                "B",
+                "Diese Folge deckt 5 verschiedene Übergänge ab: S1→S2, S2→S1, S1→S3, S3→S2, S2→S4(Bezahlen) - die höchste Überdeckung unter den Optionen. Option A deckt nur 4 ab (Wiederholung desselben Übergangs), Option C nur 3, und Option D ist gar nicht durchführbar, da nach 'Stornieren' der Endzustand erreicht ist.",
+            ),
+            q(
+                "Eine Testsuite S mit 3 Testfällen erreicht 100% Anweisungsüberdeckung für Programm P, wobei jeder Testfall einzeln 50% erreicht. Welche Aussage IST KORREKT?",
+                "Das Ausführen von S deckt alle möglichen Fehler in P auf.",
+                "S erreicht 100% Zweigüberdeckung für P.",
+                "Jede ausführbare Anweisung in P, die einen Fehler enthält, wurde mindestens einmal durch S ausgeführt.",
+                "Nach dem Entfernen eines Testfalls aus S erreichen die verbleibenden beiden Testfälle weiterhin 100% Anweisungsüberdeckung.",
+                "C",
+                "100% Anweisungsüberdeckung bedeutet per Definition, dass jede ausführbare Anweisung mindestens einmal ausgeführt wurde - unabhängig davon, ob sie Fehler enthält. Das garantiert aber nicht, dass alle Fehler gefunden werden (eine ausgeführte Zeile mit Fehler löst nicht zwingend eine Fehlerwirkung aus), nicht automatisch 100% Zweigüberdeckung, und beim Entfernen eines Testfalls könnte Überdeckung verloren gehen.",
+            ),
+            q(
+                "Warum erleichtert White-Box-Testen die Fehlererkennung auch dann, wenn die Softwarespezifikation vage, veraltet oder unvollständig ist?",
+                "Testfälle werden auf der Basis der Struktur des Testobjekts und nicht auf der Spezifikation entworfen.",
+                "Für jedes White-Box-Testverfahren kann die Überdeckung genau definiert und leicht gemessen werden.",
+                "White-Box-Testverfahren sind sehr gut geeignet, um Auslassungen in den Anforderungen zu erkennen.",
+                "White-Box-Testverfahren können sowohl im statischen als auch im dynamischen Testen eingesetzt werden.",
+                "A",
+                "Da White-Box-Tests auf der internen Struktur des Codes basieren und nicht auf der Spezifikation, können sie Fehler unabhängig von deren Qualität finden - auch versteckte, nicht spezifizierte Funktionalität. Präzise Überdeckungsmessung ist zwar richtig, aber nicht der Hauptgrund; Auslassungen in Anforderungen erkennt White-Box-Testen dagegen eher schlecht.",
+            ),
+            q(
+                "Bei intuitiver Testfallermittlung zur Zinsberechnung: Welches Beispiel wird AM WENIGSTEN vom Tester direkt vorhergesehen? (a: Formel falsch verstanden, b: falsche Formel im Code, c: Seminar zu neuer Gesetzgebung verpasst, d: unzureichende Genauigkeit)",
+                "Der Entwickler hat die Formel in der User-Story zur Berechnung der Zinsen falsch verstanden.",
+                "Der Entwickler hat 'FA = A*(1+IR^N)' statt 'FA = A*(1+IR)^N' im Quellcode geschrieben.",
+                "Der Entwickler hat das Seminar über die neue Gesetzgebung zu Zinseszinsen verpasst.",
+                "Die Genauigkeit der vom System berechneten Zinsen ist nicht ausreichend.",
+                "C",
+                "Das verpasste Seminar ist eine mögliche Grundursache für einen Defekt, aber keine direkte Vorhersage eines Fehlers, Defekts oder Ausfalls selbst - das liegt außerhalb des eigentlichen Fokus der intuitiven Testfallermittlung. Die anderen drei Optionen sind konkrete, vorhersehbare Fehlerarten (Missverständnis, Code-Fehler, Ausfall).",
+            ),
+            q(
+                "Welche der folgenden Aussagen über das explorative Testen IST KORREKT?",
+                "Testfälle werden vor Beginn einer explorativen Testsitzung entworfen.",
+                "Der Tester darf die Testausführung vornehmen, aber nicht den Testentwurf.",
+                "Ergebnisse des explorativen Testens erlauben verlässliche Vorhersagen über verbleibende Fehler.",
+                "Während des explorativen Testens kann der Tester Black-Box-Testverfahren einsetzen.",
+                "D",
+                "Beim explorativen Testen können beliebige Testverfahren, einschließlich Black-Box-Verfahren, eingesetzt werden. Testfälle werden nicht vorab entworfen, sondern während der Sitzung parallel zu Entwurf und Ausführung entwickelt, und die Ergebnisse sind kein zuverlässiger Indikator für verbleibende Fehler, da sie stark von der Testererfahrung abhängen.",
+            ),
+            q(
+                "Welche kollaborative Praxis beim Schreiben von User-Storys hilft dem Team am besten, ein gemeinsames Verständnis über das zu liefernde Produkt zu entwickeln?",
+                "Planungspoker, um einen Konsens über den Aufwand für die Umsetzung einer User-Story zu erreichen.",
+                "Reviews, um Inkonsistenzen und Widersprüche in einer User-Story zu erkennen.",
+                "Iterationsplanung, um User-Storys mit dem höchsten Geschäftswert zu priorisieren.",
+                "Gespräch, um ein gemeinsames Verständnis über die Nutzung der Software zu entwickeln.",
+                "D",
+                "Das direkte Gespräch (die 'Conversation' im 3-C-Modell) ist die kollaborative Praxis, die gemeinsames Verständnis schafft und oft zur Klärung von Akzeptanzkriterien führt. Planungspoker schätzt Aufwand, Reviews prüfen bereits Existierendes, und Iterationsplanung priorisiert - keins davon baut primär gemeinsames Verständnis auf.",
+            ),
+            q(
+                "User-Story: Preisspanne-Filter, mit Kriterien: 1) funktioniert ab Version 3.0, 2) Min-/Höchstpreis festlegbar, 3) Ergebnisse aktualisieren sich dynamisch bei Filteranpassung. Vorbedingung: Produkt A (100€), Produkt B (110€). Welches Beispiel ist DAS BESTE für einen Testfall dieser Story?",
+                "Filter auf 90-100€ setzen → nur Produkt A. Höchstpreis auf 110€ setzen → jetzt A und B.",
+                "Seite aufrufen → Standardpreise 100€/110€. Produkt C (120€) hinzufügen → Standardhöchstpreis ändert sich auf 120€.",
+                "Filter auf 90-115€ setzen → A und B. Währung auf USD ändern → Filterbereich wechselt korrekt.",
+                "Seite in drei Browsern aufrufen, Filter auf 90-110€ setzen → gleiche Ergebnisse und Layout in allen Browsern.",
+                "A",
+                "Dieser Testfall deckt direkt die Akzeptanzkriterien 2 (Preisspanne festlegen) und 3 (dynamische Aktualisierung bei Filteranpassung) ab. Die anderen Optionen testen Aspekte, die in der User-Story nicht spezifiziert sind: Standardwerte, Währungsumrechnung bzw. Browserkompatibilität.",
+            ),
+        ]
+
+        # ---------- LO5: 7 Fragen (Fragen 30, 35 ausgelassen - Mehrfachauswahl) ----------
+        lo5_questions = [
+            q(
+                "Das Team schätzt den Testaufwand für einen Testfall per Drei-Punkt-Verfahren: Best-Case 1h, Worst-Case 8h, wahrscheinlichster Fall 3h. Wie hoch ist die geschätzte Gesamtzeit für die Ausführung von VIER Testfällen?",
+                "14 Stunden",
+                "3,5 Stunden",
+                "16 Stunden",
+                "12 Stunden",
+                "A",
+                "Ein Testfall: E = (1 + 4×3 + 8) / 6 = (1+12+8)/6 = 21/6 = 3,5 Stunden. Für vier Testfälle: 3,5 × 4 = 14 Stunden.",
+            ),
+            q(
+                "Verfolgbarkeitsmatrix: TC1 deckt Req1,3,4,7 ab; TC2 deckt Req2,4,7 ab; TC3 deckt Req5,6 ab; TC4 deckt Req2 ab. Priorisierung nach zusätzlicher Überdeckung, alle Testfälle werden ausgeführt. Welcher Testfall sollte ALS LETZTER ausgeführt werden?",
+                "TC1",
+                "TC2",
+                "TC3",
+                "TC4",
+                "B",
+                "TC1 deckt zuerst die meisten Anforderungen ab (4 von 7). Danach liefert TC3 die höchste zusätzliche Überdeckung (Req5, Req6). Anschließend TC4 (deckt die letzte offene Req2 ab, die TC2 zwar auch abdeckt, aber TC4 ist knapper). TC2 bietet zuletzt keine zusätzliche Überdeckung mehr und wird daher als letztes ausgeführt.",
+            ),
+            q(
+                "Wie unterstützen Testquadranten das Testen?",
+                "Sie helfen bei der Testplanung, indem sie den Testprozess in vier Stufen unterteilen, die den vier Teststufen entsprechen.",
+                "Sie helfen bei der Bewertung hoher Überdeckungsstufen basierend auf niedrigen Überdeckungsstufen.",
+                "Sie helfen nicht-technischen Stakeholdern, verschiedene Testarten zu verstehen und deren Relevanz für bestimmte Teststufen zu erkennen.",
+                "Sie helfen agilen Teams, Kommunikationsstrategien auf Basis psychologischer Typen zu entwickeln.",
+                "C",
+                "Testquadranten strukturieren die Beziehung zwischen Testarten und ihrer Rolle (Team-Unterstützung/Produktkritik, geschäftlich/technologisch orientiert) - das hilft besonders nicht-technischen Stakeholdern beim Verständnis. Sie sind kein Modell für Teststufen-Zuordnung, Überdeckungsmessung oder psychologische Kommunikationsstrategien.",
+            ),
+            q(
+                "Für ein Risiko beträgt die Risikostufe 1.000€, die Eintrittswahrscheinlichkeit liegt bei 50%. Was ist das Schadensausmaß des Risikos? (Risikostufe = Wahrscheinlichkeit × Schadensausmaß)",
+                "500€",
+                "2.000€",
+                "50.000€",
+                "200€",
+                "B",
+                "Schadensausmaß = Risikostufe / Wahrscheinlichkeit = 1.000€ / 0,5 = 2.000€.",
+            ),
+            q(
+                "Welcher der folgenden Zwecke gehört NICHT zu den gültigen Zielen eines Testberichts?",
+                "Verfolgung des Testfortschritts und Identifizierung von Bereichen, die weitere Aufmerksamkeit erfordern.",
+                "Bereitstellung von Informationen über durchgeführte Tests, deren Ergebnisse und gefundene Fehlerzustände.",
+                "Bereitstellung detaillierter Informationen zu jedem einzelnen Fehlerzustand, einschließlich der Reproduktionsschritte.",
+                "Bereitstellung von Informationen über die für den nächsten Zeitraum geplanten Tests.",
+                "C",
+                "Detaillierte Reproduktionsschritte einzelner Fehler gehören in den Fehlerbericht, nicht in den Testbericht. Testberichte fokussieren sich auf Gesamtstatus, Fortschritt, zusammengefasste Ergebnisse und geplante nächste Schritte - nicht auf die Detailebene einzelner Defekte.",
+            ),
+            q(
+                "Ein Support-Ingenieur fragte nach der Softwareversionsnummer eines gemeldeten Fehlers und stellte anhand dieser alle Dateien des entsprechenden Release zusammen, damit ein Entwickler den Fehler analysieren und beheben konnte. Welche Praxis ermöglichte diese Vorgehensweise?",
+                "Risikomanagement",
+                "Testüberwachung und Teststeuerung",
+                "Whole-Team-Ansatz",
+                "Konfigurationsmanagement",
+                "D",
+                "Konfigurationsmanagement identifiziert, versioniert und verfolgt Konfigurationselemente wie Release-Dateien - genau das ermöglichte hier die Zusammenstellung der korrekten Dateien anhand der Versionsnummer. Risikomanagement, Testüberwachung und Whole-Team-Ansatz betreffen andere Aspekte des Testprozesses.",
+            ),
+            q(
+                "Ein Fehlerbericht zu einem Buchausleihsystem enthält Schweregrad, Umgebung, Beschreibung, Reproduktionsschritte sowie erwartetes/tatsächliches Ergebnis, aber keine spezifischen Benutzer-/Buchdaten. Welche Ergänzung hilft dem Entwickler AM EHESTEN, den Fehler schnell zu reproduzieren?",
+                "Hinzufügen spezifischer Informationen zu betroffenen Benutzern und Büchern in der Beschreibung.",
+                "Ergänzung des fehlenden Wertes im Feld 'Priorität'.",
+                "Hinzufügen von Speicherabzügen und Datenbankschnappschüssen nach jedem Schritt.",
+                "Wiederholung desselben Testfalls in verschiedenen Umgebungen mit separaten Fehlerberichten.",
+                "A",
+                "Konkrete Benutzer- und Buchdaten ermöglichen es dem Entwickler, exakt dieselben Eingabedaten zu verwenden und den Fehler dadurch zuverlässig zu reproduzieren. Die Priorität hilft bei der Planung, nicht bei der Reproduktion; übermäßige Anhänge erschweren die Analyse eher, und mehrfache Berichte in verschiedenen Umgebungen lenken vom eigentlichen Problem ab.",
+            ),
+        ]
+
+        # ---------- LO6: 1 Frage (Frage 39 ausgelassen - Mehrfachauswahl) ----------
+        lo6_questions = [
+            q(
+                "Welche der folgenden Optionen ist höchstwahrscheinlich ein Risiko der Testautomatisierung?",
+                "Die Entdeckung zusätzlicher schwerwiegender Fehler.",
+                "Bereitstellung von Maßnahmen, die für Menschen zu kompliziert sind, um sie abzuleiten.",
+                "Inkompatibilität mit der Entwicklungsplattform",
+                "Deutlich reduzierte Testausführungszeiten",
+                "C",
+                "Inkompatibilität mit der Entwicklungsplattform erschwert oder verhindert Integration, Durchführung und Datenaustausch zwischen Automatisierung und Testobjekt - ein typisches Risiko. Die anderen drei Optionen beschreiben eigentlich Vorteile der Testautomatisierung, keine Risiken.",
+            ),
+        ]
+
+        chapter_map = [
+            (lo1, "OFF-D-LO1", "Offizielle Prüfung SET D - LO1", lo1_questions),
+            (lo2, "OFF-D-LO2", "Offizielle Prüfung SET D - LO2", lo2_questions),
+            (lo3, "OFF-D-LO3", "Offizielle Prüfung SET D - LO3", lo3_questions),
+            (lo4, "OFF-D-LO4", "Offizielle Prüfung SET D - LO4", lo4_questions),
+            (lo5, "OFF-D-LO5", "Offizielle Prüfung SET D - LO5", lo5_questions),
+            (lo6, "OFF-D-LO6", "Offizielle Prüfung SET D - LO6", lo6_questions),
+        ]
+
+        for lo, number, title, questions in chapter_map:
+            existing = Chapter.query.filter_by(number=number).first()
+            if existing:
+                continue
+
+            chapter = Chapter(lo_id=lo.id, number=number, title=title)
+            db.session.add(chapter)
+            db.session.flush()
+
+            for qd in questions:
+                question = Question(
+                    chapter_id=chapter.id,
+                    prompt=qd["prompt"],
+                    option_a=qd["options"]["A"],
+                    option_b=qd["options"]["B"],
+                    option_c=qd["options"]["C"],
+                    option_d=qd["options"]["D"],
+                    correct_option=qd["correct"],
+                    explanation=qd["explanation"],
+                    source="official_mock",
+                )
+                db.session.add(question)
+
+        db.session.commit()
+
 if __name__ == "__main__":
     from app import app
     seed_official_set_a(app)
     seed_official_set_b(app)
     seed_official_set_c(app)
-    print("Offizielle Prüfungsfragen (SET A + B + C) erfolgreich eingespielt.")
+    seed_official_set_d(app)
+    print("Offizielle Prüfungsfragen (SET A + B + C + D) erfolgreich eingespielt.")
