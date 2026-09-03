@@ -1,0 +1,98 @@
+.back-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+.attempt-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.attempt-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.attempt-date {
+    color: #666;
+    font-size: 13px;
+}
+
+.attempt-score {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.attempt-score.passed {
+    color: #27ae60;
+}
+
+.attempt-score.failed {
+    color: #c0392b;
+}
+
+.attempt-badge {
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.attempt-badge.passed {
+    background: #d4edda;
+    color: #0f5132;
+}
+
+.attempt-badge.failed {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.attempt-details {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    width: 100%;
+}
+
+.attempt-card.expanded .attempt-details {
+    display: block;
+}
+
+.attempt-card {
+    flex-wrap: wrap;
+}
+
+.mini-lo-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+.mini-lo-row .low {
+    color: #c0392b;
+    font-weight: 600;
+}
+
+.mini-lo-row .ok {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    color: #666;
+    padding: 40px 20px;
+}
