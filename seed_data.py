@@ -489,6 +489,642 @@ def seed_lo1_part2(app):
         _insert_chapters(lo1, chapters_data)
 
 
+def seed_lo2(app):
+    """LO2 - Testen im Softwareentwicklungslebenszyklus (Kapitel 3.1 - 3.10)"""
+    with app.app_context():
+        lo2 = LearningObjective.query.filter_by(code="LO2").first()
+        if not lo2:
+            lo2 = LearningObjective(code="LO2", title="Testen im Softwareentwicklungslebenszyklus")
+            db.session.add(lo2)
+            db.session.commit()
+
+        chapters_data = [
+            {
+                "number": "3.1",
+                "title": "Auswirkungen des SDLC auf das Testen",
+                "questions": [
+                    {
+                        "prompt": "Welches Entwicklungsmodell erfordert die detaillierteste Testdokumentation?",
+                        "options": {
+                            "A": "Agile Modelle",
+                            "B": "Iterative und inkrementelle Modelle",
+                            "C": "Sequenzielle Modelle",
+                            "D": "Alle Modelle erfordern den gleichen Dokumentationsgrad",
+                        },
+                        "correct": "C",
+                        "explanation": "Sequenzielle Modelle erfordern detaillierte und kostspielige Testdokumentation.",
+                    },
+                    {
+                        "prompt": "In welchem Modell erfolgt dynamisches Testen erst nach der Erstellung des Codes?",
+                        "options": {
+                            "A": "Agile Modelle",
+                            "B": "Iterative und inkrementelle Modelle",
+                            "C": "Sequenzielle Modelle",
+                            "D": "In keinem Modell",
+                        },
+                        "correct": "C",
+                        "explanation": "Bei sequenziellen Modellen wird der Code zuerst vollständig erstellt, danach beginnt das dynamische Testen.",
+                    },
+                    {
+                        "prompt": "Welches Modell legt den größten Fokus auf Testautomatisierung?",
+                        "options": {
+                            "A": "Sequenzielle Modelle",
+                            "B": "Iterative und inkrementelle Modelle",
+                            "C": "Agile Modelle",
+                            "D": "Alle Modelle gleichermaßen",
+                        },
+                        "correct": "C",
+                        "explanation": "Agile Modelle setzen auf vollständige Automatisierung und kontinuierliches Regressionstesting.",
+                    },
+                    {
+                        "prompt": "Warum sind Regressionstests besonders wichtig bei iterativen und agilen Modellen?",
+                        "options": {
+                            "A": "Weil die Testdokumentation minimal ist",
+                            "B": "Weil jede Iteration/Änderung neue Defekte in bestehender Funktionalität verursachen kann",
+                            "C": "Weil die Tester weniger erfahren sind",
+                            "D": "Weil sequenzielle Modelle keine Regressionstests benötigen",
+                        },
+                        "correct": "B",
+                        "explanation": "Bei jeder Iteration können Änderungen bestehende Funktionalität beeinflussen.",
+                    },
+                    {
+                        "prompt": "Welche Aussage über die Rolle des Testers in agilen Modellen ist korrekt?",
+                        "options": {
+                            "A": "Tester haben streng formale Rollen und Aufgaben",
+                            "B": "Tester konzentrieren sich ausschließlich auf manuelle Tests",
+                            "C": "Tester agieren als Testexperten und reagieren schnell auf Änderungen",
+                            "D": "Tester sind nur am Ende des Projekts beteiligt",
+                        },
+                        "correct": "C",
+                        "explanation": "In agilen Modellen sind Tester flexible Experten, die schnell auf Änderungen reagieren.",
+                    },
+                    {
+                        "prompt": "Was ist ein Merkmal agiler Modelle im Hinblick auf Testtechniken?",
+                        "options": {
+                            "A": "Klassischer Ansatz mit hoher Kontrolle",
+                            "B": "Fokus auf erfahrungsbasierte Testtechniken",
+                            "C": "Ausschließlich automatisierte Testtechniken ohne manuelle Tests",
+                            "D": "Keine spezifischen Testtechniken erforderlich",
+                        },
+                        "correct": "B",
+                        "explanation": "Agile Modelle setzen auf erfahrungsbasierte Testtechniken neben der Automatisierung.",
+                    },
+                ],
+            },
+            {
+                "number": "3.2",
+                "title": "SDLC und gute Praktiken für das Testen",
+                "questions": [
+                    {
+                        "prompt": "Welche der folgenden ist KEINE der genannten guten Testpraktiken?",
+                        "options": {
+                            "A": "Zuweisung geeigneter Testaktivitäten zu jeder Entwicklungsaktivität",
+                            "B": "Teilnahme der Tester an Reviews",
+                            "C": "Vollständige Testautomatisierung aller Testfälle vor Projektbeginn",
+                            "D": "Einhaltung des Prinzips der frühen Tests",
+                        },
+                        "correct": "C",
+                        "explanation": "Vollständige Testautomatisierung aller Testfälle vor Projektbeginn ist keine der genannten guten Testpraktiken.",
+                    },
+                    {
+                        "prompt": "Warum sollten Tester an Reviews teilnehmen?",
+                        "options": {
+                            "A": "Um die Entwickler bei der Programmierung zu unterstützen",
+                            "B": "Um die frühzeitige Fehlererkennung zu unterstützen und die Qualität der Testbasis zu verbessern",
+                            "C": "Um die Testdokumentation zu reduzieren",
+                            "D": "Um die Projektkosten zu erhöhen",
+                        },
+                        "correct": "B",
+                        "explanation": "Durch die Teilnahme an Reviews können Tester Defekte in der Testbasis frühzeitig erkennen.",
+                    },
+                    {
+                        "prompt": "Was bedeutet das Prinzip der frühen Tests in Bezug auf gute Testpraktiken?",
+                        "options": {
+                            "A": "Alle Tests sollten vor der Entwicklung abgeschlossen sein",
+                            "B": "Testanalyse und Testentwurf sollten bereits in der entsprechenden Entwicklungsphase beginnen",
+                            "C": "Nur automatisierte Tests sollten früh durchgeführt werden",
+                            "D": "Frühes Testen ist nur bei agilen Modellen relevant",
+                        },
+                        "correct": "B",
+                        "explanation": "Testanalyse und Testentwurf beginnen parallel zur jeweiligen Entwicklungsphase, nicht erst am Ende.",
+                    },
+                    {
+                        "prompt": "Warum haben verschiedene Teststufen spezifische Ziele?",
+                        "options": {
+                            "A": "Um die Testdokumentation zu vereinfachen",
+                            "B": "Um eine fokussierte und effiziente Testdurchführung zu ermöglichen",
+                            "C": "Um die Anzahl der Tester zu reduzieren",
+                            "D": "Um nur funktionale Anforderungen zu testen",
+                        },
+                        "correct": "B",
+                        "explanation": "Spezifische Ziele pro Teststufe sorgen für Fokus und Effizienz.",
+                    },
+                    {
+                        "prompt": "Was ist der Hauptnutzen guter Testpraktiken laut dieser Präsentation?",
+                        "options": {
+                            "A": "Sie ersetzen die Notwendigkeit eines Softwareentwicklungsmodells",
+                            "B": "Sie unterstützen die hohe Produktqualität und verkürzen die Zeit zur Fehlerbehebung",
+                            "C": "Sie eliminieren alle Defekte vor dem Release",
+                            "D": "Sie sind nur bei sequenziellen Modellen anwendbar",
+                        },
+                        "correct": "B",
+                        "explanation": "Hohe Qualität und schnellere Fehlerbehebung sind die zentralen Vorteile.",
+                    },
+                ],
+            },
+            {
+                "number": "3.3",
+                "title": "Testen als Treiber für die Softwareentwicklung",
+                "questions": [
+                    {
+                        "prompt": "Was ist das zentrale Prinzip von TDD (Testgetriebene Entwicklung)?",
+                        "options": {
+                            "A": "Tests werden nach dem Code geschrieben, um Fehler zu finden",
+                            "B": "Tests werden vor dem Code geschrieben und der Code wird geschrieben, um die Tests zu bestehen",
+                            "C": "Tests werden nur für kritische Funktionen geschrieben",
+                            "D": "Tests werden ausschließlich von unabhängigen Testern erstellt",
+                        },
+                        "correct": "B",
+                        "explanation": "Bei TDD gilt: erst der Test, dann der Code (Red-Green-Refactor-Zyklus).",
+                    },
+                    {
+                        "prompt": "Worauf basieren die Tests bei ATDD?",
+                        "options": {
+                            "A": "Auf der technischen Architektur des Systems",
+                            "B": "Auf den im Systemdesign definierten Abnahmekriterien",
+                            "C": "Auf den Erfahrungen der Tester",
+                            "D": "Auf den Ergebnissen vorheriger Testzyklen",
+                        },
+                        "correct": "B",
+                        "explanation": "ATDD leitet die Tests direkt aus den Abnahmekriterien ab.",
+                    },
+                    {
+                        "prompt": "Was unterscheidet BDD von den anderen testgetriebenen Ansätzen?",
+                        "options": {
+                            "A": "BDD verwendet ausschließlich manuelle Tests",
+                            "B": "BDD beschreibt das gewünschte Verhalten in natürlicher Sprache, die für Stakeholder verständlich ist",
+                            "C": "BDD erfordert keine Testautomatisierung",
+                            "D": "BDD wird nur bei sequenziellen Entwicklungsmodellen eingesetzt",
+                        },
+                        "correct": "B",
+                        "explanation": "BDD nutzt natürliche Sprache (z.B. Given-When-Then), damit auch nicht-technische Stakeholder die Tests verstehen.",
+                    },
+                    {
+                        "prompt": "Was haben TDD, ATDD und BDD gemeinsam?",
+                        "options": {
+                            "A": "Sie alle verwenden ausschließlich manuelle Testtechniken",
+                            "B": "Sie alle legen großen Wert auf frühes Testen und Testautomatisierung",
+                            "C": "Sie alle erfordern detaillierte Testdokumentation",
+                            "D": "Sie alle werden nur in agilen Projekten eingesetzt",
+                        },
+                        "correct": "B",
+                        "explanation": "Frühes Testen und Automatisierung sind die gemeinsamen Stärken aller drei Ansätze.",
+                    },
+                    {
+                        "prompt": "Welche Aktivität gehört zum TDD-Prozess neben dem Schreiben von Tests und Code?",
+                        "options": {
+                            "A": "Erstellung von Testdokumentation",
+                            "B": "Refaktorisierung von Code und Tests",
+                            "C": "Durchführung von Abnahmetests",
+                            "D": "Erstellung von Risikoverzeichnissen",
+                        },
+                        "correct": "B",
+                        "explanation": "Refaktorisierung ist ein wesentlicher Bestandteil von TDD, um Qualität und Flexibilität langfristig zu erhalten.",
+                    },
+                ],
+            },
+            {
+                "number": "3.4",
+                "title": "DevOps und Testen",
+                "questions": [
+                    {
+                        "prompt": "Was ist das Hauptziel der DevOps-Methodik?",
+                        "options": {
+                            "A": "Vollständige Ersetzung manueller Tests durch Automatisierung",
+                            "B": "Synergien und Effizienz durch enge Zusammenarbeit zwischen Entwicklung und Betrieb",
+                            "C": "Ausschließliche Fokussierung auf die Testdokumentation",
+                            "D": "Verzicht auf kontinuierliche Integration",
+                        },
+                        "correct": "B",
+                        "explanation": "DevOps zielt auf Synergien und Effizienz durch enge Zusammenarbeit zwischen Entwicklung und Betrieb ab.",
+                    },
+                    {
+                        "prompt": "Welcher der folgenden ist KEIN genannter Vorteil von DevOps für das Testen?",
+                        "options": {
+                            "A": "Schnelles Feedback",
+                            "B": "Automatisierte Prozesse",
+                            "C": "Vollständige Abschaffung des manuellen Testens",
+                            "D": "Sichtbarkeit von nicht-funktionalen Qualitätsmerkmalen",
+                        },
+                        "correct": "C",
+                        "explanation": "Manuelles Testen bleibt wichtig, besonders aus Benutzerperspektive - eine Abschaffung wurde nicht genannt.",
+                    },
+                    {
+                        "prompt": "Warum ist manuelles Testen auch in DevOps-Umgebungen weiterhin notwendig?",
+                        "options": {
+                            "A": "Weil Automatisierung zu teuer ist",
+                            "B": "Weil es insbesondere aus der Benutzerperspektive weiterhin wichtig ist",
+                            "C": "Weil CI/CD-Tools nicht zuverlässig sind",
+                            "D": "Weil DevOps keine Automatisierung unterstützt",
+                        },
+                        "correct": "B",
+                        "explanation": "Automatisierte Tests können nicht alles abdecken, was ein Mensch aus Nutzersicht beurteilen kann.",
+                    },
+                    {
+                        "prompt": "Was gehört zu den Herausforderungen von DevOps im Hinblick auf das Testen?",
+                        "options": {
+                            "A": "Zu viel manuelles Testen",
+                            "B": "Die Notwendigkeit einer definierten Bereitstellungspipeline sowie geeigneter CI/CD-Tools und Ressourcen",
+                            "C": "Fehlende Automatisierung ist niemals ein Problem",
+                            "D": "DevOps benötigt keine Werkzeuge",
+                        },
+                        "correct": "B",
+                        "explanation": "Eine definierte Pipeline sowie passende CI/CD-Tools und Ressourcen sind zentrale Herausforderungen.",
+                    },
+                    {
+                        "prompt": "Welchen Effekt hat DevOps laut Fazit auf die Fehlererkennung?",
+                        "options": {
+                            "A": "Fehlererkennung wird langsamer",
+                            "B": "Fehlererkennung erfolgt schneller durch frühere Integration von Tests",
+                            "C": "DevOps hat keinen Einfluss auf die Fehlererkennung",
+                            "D": "Fehler werden erst am Ende des Projekts erkannt",
+                        },
+                        "correct": "B",
+                        "explanation": "Durch frühere Integration von Tests werden Fehler schneller erkannt.",
+                    },
+                ],
+            },
+            {
+                "number": "3.5",
+                "title": "Shift-Left-Ansatz",
+                "questions": [
+                    {
+                        "prompt": "Was bedeutet der 'Shift-Left'-Ansatz im Softwaretest?",
+                        "options": {
+                            "A": "Tests werden in früheren Phasen des Entwicklungszyklus durchgeführt",
+                            "B": "Tests werden ausschließlich am Ende des Projekts durchgeführt",
+                            "C": "Tests werden komplett automatisiert und benötigen keine manuelle Prüfung mehr",
+                            "D": "Tests werden nur bei sequenziellen Modellen eingesetzt",
+                        },
+                        "correct": "A",
+                        "explanation": "Shift-Left bedeutet, Tests in frühere Phasen des Entwicklungszyklus zu verschieben.",
+                    },
+                    {
+                        "prompt": "Bedeutet 'Shift-Left', dass Testen in späteren Phasen übersprungen wird?",
+                        "options": {
+                            "A": "Ja, spätere Testphasen entfallen komplett",
+                            "B": "Ja, aber nur bei agilen Projekten",
+                            "C": "Nein, der Fokus liegt zusätzlich auf der frühzeitigen Erkennung und Behebung von Defekten",
+                            "D": "Ja, Shift-Left ersetzt alle anderen Testaktivitäten",
+                        },
+                        "correct": "C",
+                        "explanation": "Spätere Testphasen entfallen nicht, es kommt lediglich ein zusätzlicher Fokus auf frühe Fehlererkennung hinzu.",
+                    },
+                    {
+                        "prompt": "Welche der folgenden Herausforderungen wird beim Shift-Left-Ansatz genannt?",
+                        "options": {
+                            "A": "Zu wenig Testautomatisierung",
+                            "B": "Fehlende gesetzliche Vorschriften",
+                            "C": "Mangel an Testtechniken",
+                            "D": "Zusätzliche Aufwendungen für Schulungen und Ressourcen in frühen Phasen",
+                        },
+                        "correct": "D",
+                        "explanation": "Zusätzliche Schulungs- und Ressourcenaufwände in frühen Phasen sind eine typische Herausforderung.",
+                    },
+                    {
+                        "prompt": "Welcher Vorteil wird dem Shift-Left-Ansatz zugeschrieben?",
+                        "options": {
+                            "A": "Vollständige Elimination aller Defekte",
+                            "B": "Kostenersparnis in späteren Phasen",
+                            "C": "Wegfall der Notwendigkeit von Stakeholder-Kommunikation",
+                            "D": "Verzicht auf statische Code-Analyse",
+                        },
+                        "correct": "B",
+                        "explanation": "Durch frühe Fehlererkennung spart man Kosten, die sonst in späteren Phasen anfallen würden.",
+                    },
+                    {
+                        "prompt": "Was gehört laut Präsentation zu den Gründen, 'Shift-Left' einzuführen?",
+                        "options": {
+                            "A": "Verzicht auf kontinuierliche Integration",
+                            "B": "Reduzierung der Testabdeckung",
+                            "C": "Vermeidung nicht-funktionaler Tests",
+                            "D": "Statische Code-Analyse und Überprüfung der Spezifikationen",
+                        },
+                        "correct": "D",
+                        "explanation": "Statische Code-Analyse und Spezifikationsüberprüfung gehören zu den genannten Gründen für Shift-Left.",
+                    },
+                ],
+            },
+            {
+                "number": "3.6",
+                "title": "Retrospektiven und Prozessverbesserung",
+                "questions": [
+                    {
+                        "prompt": "Wann werden Retrospektiven typischerweise durchgeführt?",
+                        "options": {
+                            "A": "Vor Beginn eines Projekts",
+                            "B": "Während der Testplanung",
+                            "C": "Nach Abschluss eines Projekts, einer Iteration oder eines wichtigen Meilensteins",
+                            "D": "Ausschließlich bei sequenziellen Entwicklungsmodellen",
+                        },
+                        "correct": "C",
+                        "explanation": "Retrospektiven finden nach Abschluss eines Projekts, einer Iteration oder eines wichtigen Meilensteins statt.",
+                    },
+                    {
+                        "prompt": "Welche Frage wird in einer Retrospektive NICHT typischerweise gestellt?",
+                        "options": {
+                            "A": "Was hat gut funktioniert und sollte beibehalten werden?",
+                            "B": "Welche Aktivitäten sind gescheitert und erfordern Verbesserung?",
+                            "C": "Wie können Verbesserungen für die Zukunft umgesetzt werden?",
+                            "D": "Welcher Mitarbeiter ist für Fehler verantwortlich zu machen?",
+                        },
+                        "correct": "D",
+                        "explanation": "Bei Retrospektiven geht es nicht um Schuldzuweisungen, sondern um konstruktive Prozessanalyse.",
+                    },
+                    {
+                        "prompt": "Was gehört zu den Vorteilen von Retrospektiven für das Testen?",
+                        "options": {
+                            "A": "Stärkung des Teamzusammenhalts und Optimierung der Zusammenarbeit",
+                            "B": "Vollständige Automatisierung aller Testfälle",
+                            "C": "Wegfall der Notwendigkeit von Testdokumentation",
+                            "D": "Verzicht auf Testgrundlagen",
+                        },
+                        "correct": "A",
+                        "explanation": "Teamzusammenhalt und Zusammenarbeit gehören zu den genannten Vorteilen.",
+                    },
+                    {
+                        "prompt": "Wovon hängt die Effektivität von Retrospektiven laut Präsentation ab?",
+                        "options": {
+                            "A": "Ausschließlich von der Teamgröße",
+                            "B": "Von der Anzahl der durchgeführten Testfälle",
+                            "C": "Von der Wahl des Entwicklungsmodells",
+                            "D": "Von Implementierung der Empfehlungen, Änderungsmanagement und Engagement des Teams",
+                        },
+                        "correct": "D",
+                        "explanation": "Alle drei Faktoren bestimmen die Effektivität von Retrospektiven.",
+                    },
+                    {
+                        "prompt": "Was ist das übergeordnete Ziel von Retrospektiven laut Fazit?",
+                        "options": {
+                            "A": "Kontinuierliche Verbesserung des Softwareentwicklungsprozesses",
+                            "B": "Reduzierung der Teamgröße",
+                            "C": "Vollständige Vermeidung von Fehlern",
+                            "D": "Ersatz der Testdokumentation durch mündliche Absprachen",
+                        },
+                        "correct": "A",
+                        "explanation": "Kontinuierliche Verbesserung ist das übergeordnete Ziel.",
+                    },
+                ],
+            },
+            {
+                "number": "3.7",
+                "title": "Teststufen",
+                "questions": [
+                    {
+                        "prompt": "Welche Teststufe konzentriert sich auf das Testen einzelner Module durch Entwickler mithilfe von Test-Frameworks?",
+                        "options": {
+                            "A": "Systemtest",
+                            "B": "Komponententest",
+                            "C": "Abnahmetest",
+                            "D": "Systemintegrationstest",
+                        },
+                        "correct": "B",
+                        "explanation": "Der Komponententest (Unit-Test) prüft einzelne Module mithilfe von Test-Frameworks, meist durch Entwickler.",
+                    },
+                    {
+                        "prompt": "Welche Integrationsstrategien werden im Zusammenhang mit Komponentenintegrationstests genannt?",
+                        "options": {
+                            "A": "Nur Bottom-up",
+                            "B": "Nur Top-down",
+                            "C": "Top-down, Bottom-up und Big-Bang",
+                            "D": "Nur Big-Bang",
+                        },
+                        "correct": "C",
+                        "explanation": "Top-down, Bottom-up und Big-Bang sind die genannten Integrationsstrategien.",
+                    },
+                    {
+                        "prompt": "Wer führt den Abnahmetest typischerweise durch?",
+                        "options": {
+                            "A": "Entwickler mit Unit-Test-Frameworks",
+                            "B": "Ein unabhängiges Testteam ausschließlich im Testlabor",
+                            "C": "Endbenutzer oder ein Team, das ihre Interessen vertritt",
+                            "D": "Ausschließlich automatisierte Testskripte ohne menschliche Beteiligung",
+                        },
+                        "correct": "C",
+                        "explanation": "Der Abnahmetest wird typischerweise von Endbenutzern oder einem Team, das ihre Interessen vertritt, durchgeführt.",
+                    },
+                    {
+                        "prompt": "Worauf konzentriert sich der Systemintegrationstest?",
+                        "options": {
+                            "A": "Auf einzelne Codefragmente",
+                            "B": "Auf die Schnittstellen zwischen dem getesteten System und anderen Systemen oder externen Diensten",
+                            "C": "Auf die Zusammenarbeit einzelner Module innerhalb derselben Anwendung",
+                            "D": "Auf die Validierung geschäftlicher Anforderungen der Endbenutzer",
+                        },
+                        "correct": "B",
+                        "explanation": "Der Systemintegrationstest prüft die Schnittstellen zu anderen Systemen oder externen Diensten.",
+                    },
+                    {
+                        "prompt": "Wodurch unterscheiden sich die verschiedenen Teststufen laut Präsentation?",
+                        "options": {
+                            "A": "Ausschließlich durch die Anzahl der Tester",
+                            "B": "Durch Testobjekt, Ziele, Basis, Fehlerhandling und Ansatz",
+                            "C": "Ausschließlich durch die verwendete Programmiersprache",
+                            "D": "Ausschließlich durch die Projektdauer",
+                        },
+                        "correct": "B",
+                        "explanation": "Testobjekt, Ziele, Basis, Fehlerhandling und Ansatz sind die unterscheidenden Merkmale der Teststufen.",
+                    },
+                ],
+            },
+            {
+                "number": "3.8",
+                "title": "Testarten",
+                "questions": [
+                    {
+                        "prompt": "Welche Frage beantworten funktionale Tests?",
+                        "options": {
+                            "A": "'Wie schnell' arbeitet das System?",
+                            "B": "'Was' soll das System tun?",
+                            "C": "'Wie sicher' ist das System?",
+                            "D": "'Wie wartbar' ist das System?",
+                        },
+                        "correct": "B",
+                        "explanation": "Funktionale Tests beantworten die Frage 'Was soll das System tun?'.",
+                    },
+                    {
+                        "prompt": "Welche der folgenden Eigenschaften gehört zu den nicht-funktionalen Tests?",
+                        "options": {
+                            "A": "Funktionale Vollständigkeit",
+                            "B": "Funktionale Korrektheit",
+                            "C": "IT-Sicherheit",
+                            "D": "Funktionale Angemessenheit",
+                        },
+                        "correct": "C",
+                        "explanation": "IT-Sicherheit gehört zu den nicht-funktionalen Qualitätsmerkmalen.",
+                    },
+                    {
+                        "prompt": "Worauf basiert ein Black-Box-Test?",
+                        "options": {
+                            "A": "Auf der internen Struktur des Systems",
+                            "B": "Auf dem Quellcode",
+                            "C": "Auf externer Dokumentation bzw. der Spezifikation",
+                            "D": "Auf der Testabdeckung des Codes",
+                        },
+                        "correct": "C",
+                        "explanation": "Black-Box-Tests basieren auf externer Dokumentation bzw. der Spezifikation.",
+                    },
+                    {
+                        "prompt": "Was ist das Ziel des White-Box-Tests?",
+                        "options": {
+                            "A": "Überprüfung der Übereinstimmung mit externer Dokumentation",
+                            "B": "Erzielung eines akzeptablen Testabdeckungsgrads basierend auf der internen Struktur",
+                            "C": "Bewertung der Gebrauchstauglichkeit",
+                            "D": "Prüfung der IT-Sicherheit",
+                        },
+                        "correct": "B",
+                        "explanation": "White-Box-Tests zielen auf einen akzeptablen Testabdeckungsgrad basierend auf der internen Struktur ab.",
+                    },
+                    {
+                        "prompt": "Wie lassen sich funktionale Tests, nicht-funktionale Tests, Black-Box- und White-Box-Tests auf die Teststufen anwenden?",
+                        "options": {
+                            "A": "Nur funktionale Tests können auf allen Teststufen angewendet werden",
+                            "B": "Sie können nur auf dem Systemtest angewendet werden",
+                            "C": "Alle vier Testarten können auf allen Teststufen angewendet werden",
+                            "D": "Nur White-Box-Tests sind auf allen Teststufen anwendbar",
+                        },
+                        "correct": "C",
+                        "explanation": "Alle vier Testarten sind auf jeder Teststufe anwendbar.",
+                    },
+                ],
+            },
+            {
+                "number": "3.9",
+                "title": "Fehlernachtest und Regressionstest",
+                "questions": [
+                    {
+                        "prompt": "Was überprüft der Fehlernachtest?",
+                        "options": {
+                            "A": "Ob andere, nicht geänderte Teile des Systems noch funktionieren",
+                            "B": "Die Behebung des ursprünglichen Fehlers",
+                            "C": "Die Performance des gesamten Systems",
+                            "D": "Die Benutzerfreundlichkeit neuer Funktionen",
+                        },
+                        "correct": "B",
+                        "explanation": "Der Fehlernachtest überprüft gezielt, ob der ursprünglich gemeldete Fehler tatsächlich behoben wurde.",
+                    },
+                    {
+                        "prompt": "Was ist das Hauptziel des Regressionstests?",
+                        "options": {
+                            "A": "Sicherstellen, dass ein spezifischer Fehler behoben wurde",
+                            "B": "Neue Funktionen zu entwickeln",
+                            "C": "Verhindern von Regressionen, also dass Änderungen bestehende Funktionen beeinträchtigen",
+                            "D": "Die Testdokumentation zu reduzieren",
+                        },
+                        "correct": "C",
+                        "explanation": "Regressionstests verhindern, dass Änderungen bestehende Funktionen negativ beeinflussen.",
+                    },
+                    {
+                        "prompt": "Warum wird für Regressionstests Automatisierung empfohlen?",
+                        "options": {
+                            "A": "Weil manuelle Tests generell ungenau sind",
+                            "B": "Wegen der Wiederholbarkeit und Skalierbarkeit",
+                            "C": "Weil Regressionstests nur einmalig durchgeführt werden",
+                            "D": "Weil Automatisierung günstiger ist als Personal",
+                        },
+                        "correct": "B",
+                        "explanation": "Wiederholbarkeit und Skalierbarkeit sind die Hauptgründe für Automatisierung bei Regressionstests.",
+                    },
+                    {
+                        "prompt": "Was gehört zum Umfang eines Regressionstests?",
+                        "options": {
+                            "A": "Ausschließlich das geänderte Modul",
+                            "B": "Ausschließlich Module, die vom Endbenutzer genutzt werden",
+                            "C": "Ausschließlich die Testdokumentation",
+                            "D": "Das geänderte Modul sowie andere betroffene Module/Systeme",
+                        },
+                        "correct": "D",
+                        "explanation": "Der Regressionstest umfasst sowohl das geänderte Modul als auch andere betroffene Module/Systeme.",
+                    },
+                    {
+                        "prompt": "Was wird auf der Abnahme-Teststufe im Kontext von Fehlernachtest/Regressionstest geprüft?",
+                        "options": {
+                            "A": "Ob die Änderungen den Erwartungen der Benutzer entsprechen",
+                            "B": "Ausschließlich die Codequalität",
+                            "C": "Ausschließlich die Schnittstellen zwischen Modulen",
+                            "D": "Die interne Struktur des Systems",
+                        },
+                        "correct": "A",
+                        "explanation": "Auf Abnahme-Ebene wird geprüft, ob die Änderungen den Benutzererwartungen entsprechen.",
+                    },
+                ],
+            },
+            {
+                "number": "3.10",
+                "title": "Wartungstest",
+                "questions": [
+                    {
+                        "prompt": "Was ist das Ziel von Wartungstests?",
+                        "options": {
+                            "A": "Nur Fehler in neu entwickelten Modulen zu finden",
+                            "B": "Behebung von Fehlern in laufenden Systemen sowie Anpassung an Änderungen der Betriebsumgebung",
+                            "C": "Ausschließlich das Testen vor dem ersten Release",
+                            "D": "Ersatz für Systemtests",
+                        },
+                        "correct": "B",
+                        "explanation": "Wartungstests beheben Fehler in laufenden Systemen und passen die Software an Änderungen der Betriebsumgebung an.",
+                    },
+                    {
+                        "prompt": "Welche Kategorie gehört NICHT zu den Wartungstests?",
+                        "options": {
+                            "A": "Änderungen (Updates, Hotfixes)",
+                            "B": "Updates/Migrationen",
+                            "C": "Außerbetriebnahme",
+                            "D": "Erstinstallation eines komplett neuen Systems",
+                        },
+                        "correct": "D",
+                        "explanation": "Die Erstinstallation eines komplett neuen Systems gehört nicht zu den Wartungstests, da diese erst nach der Einführung ansetzen.",
+                    },
+                    {
+                        "prompt": "Was ist Teil der 'Einflussanalyse der Änderung'?",
+                        "options": {
+                            "A": "Bewertung des mit der Änderung verbundenen Risikos und Entscheidung über Testumfang",
+                            "B": "Automatische Generierung von Testfällen",
+                            "C": "Erstellung der ursprünglichen Systemarchitektur",
+                            "D": "Schulung der Endbenutzer",
+                        },
+                        "correct": "A",
+                        "explanation": "Bei der Einflussanalyse geht es um Risikobewertung und die Entscheidung über den nötigen Testumfang.",
+                    },
+                    {
+                        "prompt": "Warum wird bei der Außerbetriebnahme eines Systems getestet?",
+                        "options": {
+                            "A": "Um neue Funktionen einzuführen",
+                            "B": "Um die Performance zu steigern",
+                            "C": "Im Zusammenhang mit Datenarchivierung und Testen der Wiederherstellung",
+                            "D": "Um die Benutzeroberfläche zu verbessern",
+                        },
+                        "correct": "C",
+                        "explanation": "Bei der Außerbetriebnahme spielen Datenarchivierung und das Testen der Wiederherstellung eine zentrale Rolle.",
+                    },
+                    {
+                        "prompt": "Was wird bei der Durchführung der Wartungstests neben der Korrektheit der Änderung noch geprüft?",
+                        "options": {
+                            "A": "Regressionen in unveränderten Bereichen des Systems",
+                            "B": "Ausschließlich die Dokumentation",
+                            "C": "Die ursprüngliche Projektplanung",
+                            "D": "Die Teamzusammensetzung",
+                        },
+                        "correct": "A",
+                        "explanation": "Neben der Korrektheit der Änderung selbst werden auch Regressionen in unveränderten Bereichen geprüft.",
+                    },
+                ],
+            },
+        ]
+
+        _insert_chapters(lo2, chapters_data)
+
+
 def seed_lo4(app):
     """LO4 - Testanalyse und -entwurf (Kapitel 5.1 - 5.5)"""
     with app.app_context():
@@ -877,5 +1513,6 @@ if __name__ == "__main__":
     from app import app
     seed_lo1(app)
     seed_lo1_part2(app)
+    seed_lo2(app)
     seed_lo4(app)
-    print("LO1 (Kapitel 2.1-2.7) und LO4 (Kapitel 5.1-5.5) erfolgreich eingespielt.")
+    print("LO1, LO2 und LO4 erfolgreich eingespielt.")
