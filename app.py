@@ -39,6 +39,13 @@ def api_dashboard():
         percent = round((mastered / total_questions) * 100) if total_questions > 0 else 0
         due_count = sum(1 for q in questions if q.next_review <= datetime.utcnow())
 
+        # Verteilung nach Box-Level (1-5)
+        box_distribution = {level: 0 for level in range(1, 6)}
+        for q in questions:
+            box_distribution[q.box] += 1
+
+        not_started = sum(1 for q in questions if q.times_seen == 0)
+
         data.append({
             "id": lo.id,
             "code": lo.code,
@@ -47,6 +54,8 @@ def api_dashboard():
             "mastered": mastered,
             "total_questions": total_questions,
             "due_count": due_count,
+            "box_distribution": box_distribution,
+            "not_started": not_started,
         })
 
     return jsonify(data)
