@@ -80,3 +80,19 @@ class Question(db.Model):
 
     def __repr__(self):
         return f"<Question {self.id} (Box {self.box})>"
+
+
+class MockExamAttempt(db.Model):
+    """Ein abgeschlossener Prüfungssimulations-Versuch."""
+    __tablename__ = "mock_exam_attempts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    taken_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    total_correct = db.Column(db.Integer, nullable=False)
+    total_questions = db.Column(db.Integer, nullable=False)
+    overall_percent = db.Column(db.Float, nullable=False)
+    passed = db.Column(db.Boolean, nullable=False)
+    lo_breakdown_json = db.Column(db.Text, nullable=False)  # JSON-String der lo_results
+
+    def __repr__(self):
+        return f"<MockExamAttempt {self.taken_at} - {self.overall_percent}%>"
