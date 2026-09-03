@@ -1,0 +1,81 @@
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timedelta
+
+db = SQLAlchemy()
+
+# Intervalle pro Leitner-Box (in Tagen), bis eine Frage wieder fällig ist
+BOX_INTERVALS = {
+    1: 0,   # sofort/nächste Session wieder fällig
+    2: 3,
+    3: 7,
+    4: 14,
+    5: 30,
+}
+MAX_BOX = 5
+
+
+class LearningObjective(db.Model):
+    """Repräsentiert LO1-LO6 aus dem ISTQB-Lehrplan."""
+    __tablename__ = "learning_objectives"
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), unique=True, nullable=False)   # z.B. "LO1"
+    title = db.Column(db.String(200), nullable=False)              # z.B. "Grundlagen des Testens"
+
+    chapters = db.relationship("Chapter", backref="learning_objective", lazy=True)
+
+    def __repr__(self):
+        return f"<LO {self.code}: {self.title}>"
+
+
+class Chapter(db.Model):
+    """Ein einzelnes Kapitel/eine Präsentation, z.B. '2.3 Grundsätze des Testens'."""
+    __tablename__ = "chapters"
+
+    id = db.Column(db.Integer, primary_key=True)
+    lo_id = db.Column(db.Integer, db.ForeignKey("learning_objectives.id"), nullable=False)
+    number = db.Column(db.String(10), nullable=False)   # z.B. "2.3"
+    title = db.Column(db.String(200), nullable=False)   # z.B. "Grundsätze des Testens"
+    content = db.Column(db.Text)                        # aufbereiteter Lerninhalt (Markdown)
+
+    questions = db.relationship("Question", backref="chapter", lazy=True)
+
+    def __repr__(self):
+        return f"<Chapter {self.number}: {self.title}>"
+
+
+class Question(db.Model):
+    """Eine einzelne Multiple-Choice-Frage inkl. Leitner-Status."""
+    __tablename__ = "questions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    chapter_id = db.Column(db.Integer, db.ForeignKey("chapters.id"), nullable=False)
+
+    prompt = db.Column(db.Text, nullable=False)
+    option_a = db.Column(db.Text, nullable=False)
+    option_b = db.Column(db.Text, nullable=False)
+    option_c = db.Column(db.Text, nullable=False)
+    option_d = db.Column(db.Text, nullable=False)
+    correct_option = db.Column(db.String(1), nullable=False)  # "A" / "B" / "C" / "D"
+    explanation = db.Column(db.Text)
+
+    # Leitner-System-Felder
+    box = db.Column(db.Integer, default=1, nullable=False)
+    next_review = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    times_seen = db.Column(db.Integer, default=0, nullable=False)
+    times_correct = db.Column(db.Integer, default=0, nullable=False)
+
+    def register_answer(self, was_correct: bool):
+        """Aktualisiert Box-Level und nächsten Wiederholungstermin nach einer Antwort."""
+        self.times_seen += 1
+        if was_correct:
+            self.times_correct += 1
+            self.box = min(self.box + 1, MAX_BOX)
+        else:
+            self.box = 1
+
+        days = BOX_INTERVALS[self.box]
+        self.next_review = datetime.utcnow() + timedelta(days=days)
+
+    def __repr__(self):
+        return f"<Question {self.id} (Box {self.box})>"
