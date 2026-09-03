@@ -35,3 +35,26 @@
     border: none;
     cursor: pointer;
 }
+
+.box-breakdown {
+    margin: 10px 0;
+    padding: 10px 12px;
+    background: #f7f7f9;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.box-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.box-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
