@@ -34,9 +34,9 @@ def api_dashboard():
     data = []
     for lo in los:
         questions = [q for chapter in lo.chapters for q in chapter.questions]
-        total_seen = sum(q.times_seen for q in questions)
-        total_correct = sum(q.times_correct for q in questions)
-        percent = round((total_correct / total_seen) * 100) if total_seen > 0 else 0
+        total_questions = len(questions)
+        mastered = sum(1 for q in questions if q.box >= 3)
+        percent = round((mastered / total_questions) * 100) if total_questions > 0 else 0
         due_count = sum(1 for q in questions if q.next_review <= datetime.utcnow())
 
         data.append({
@@ -44,6 +44,8 @@ def api_dashboard():
             "code": lo.code,
             "title": lo.title,
             "percent": percent,
+            "mastered": mastered,
+            "total_questions": total_questions,
             "due_count": due_count,
         })
 
