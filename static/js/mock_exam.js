@@ -166,6 +166,7 @@ function renderResults(result) {
         </table>
         <br>
         <a href="/" class="nav-button" style="display:inline-block; text-decoration:none;">Zurück zum Dashboard</a>
+        <a href="/mock-exam/history" class="nav-button" style="display:inline-block; text-decoration:none; background:#6c757d;">Prüfungsverlauf ansehen</a>
     `;
 }
 
