@@ -1,6 +1,19 @@
 from flask import Flask, render_template, jsonify, request
 from models import db, LearningObjective, Question
 from datetime import datetime
+import random
+
+
+MOCK_EXAM_DISTRIBUTION = {
+    "LO1": 8,
+    "LO2": 6,
+    "LO3": 4,
+    "LO4": 11,
+    "LO5": 9,
+    "LO6": 2,
+}
+MOCK_EXAM_DURATION_SECONDS = 60 * 60
+MOCK_EXAM_PASS_PERCENT = 65
 
 
 def create_app():
@@ -156,6 +169,93 @@ def api_review_questions(lo_id):
             })
 
     return jsonify({"lo_title": lo.title, "chapters": data})
+
+
+# ---------- Mock-Exam ----------
+
+@app.route("/mock-exam")
+def mock_exam_page():
+    return render_template("mock_exam.html")
+
+
+@app.route("/api/mock-exam/start")
+def api_mock_exam_start():
+    selected_questions = []
+    for lo_code, count in MOCK_EXAM_DISTRIBUTION.items():
+        lo = LearningObjective.query.filter_by(code=lo_code).first()
+        if not lo:
+            continue
+        pool = [q for chapter in lo.chapters for q in chapter.questions]
+        sample_size = min(count, len(pool))
+        selected_questions.extend(random.sample(pool, sample_size))
+
+    random.shuffle(selected_questions)
+
+    data = [
+        {
+            "id": q.id,
+            "prompt": q.prompt,
+            "options": {"A": q.option_a, "B": q.option_b, "C": q.option_c, "D": q.option_d},
+        }
+        for q in selected_questions
+    ]
+
+    return jsonify({
+        "questions": data,
+        "duration_seconds": MOCK_EXAM_DURATION_SECONDS,
+        "pass_percent": MOCK_EXAM_PASS_PERCENT,
+    })
+
+
+@app.route("/api/mock-exam/submit", methods=["POST"])
+def api_mock_exam_submit():
+    payload = request.json
+    answers = payload.get("answers", {})
+
+    lo_stats = {}
+    total_correct = 0
+    total_questions = len(answers)
+
+    for question_id_str, selected in answers.items():
+        question = Question.query.get(int(question_id_str))
+        if not question:
+            continue
+
+        was_correct = (selected == question.correct_option)
+        question.register_answer(was_correct)
+
+        lo = question.chapter.learning_objective
+        if lo.code not in lo_stats:
+            lo_stats[lo.code] = {"title": lo.title, "correct": 0, "total": 0}
+        lo_stats[lo.code]["total"] += 1
+        if was_correct:
+            lo_stats[lo.code]["correct"] += 1
+            total_correct += 1
+
+    db.session.commit()
+
+    lo_results = []
+    for code in sorted(lo_stats.keys()):
+        stat = lo_stats[code]
+        percent = round((stat["correct"] / stat["total"]) * 100, 2) if stat["total"] else 0
+        lo_results.append({
+            "code": code,
+            "title": stat["title"],
+            "correct": stat["correct"],
+            "total": stat["total"],
+            "percent": percent,
+        })
+
+    overall_percent = round((total_correct / total_questions) * 100, 2) if total_questions else 0
+    passed = overall_percent >= MOCK_EXAM_PASS_PERCENT
+
+    return jsonify({
+        "total_correct": total_correct,
+        "total_questions": total_questions,
+        "overall_percent": overall_percent,
+        "passed": passed,
+        "lo_results": lo_results,
+    })
 
 
 if __name__ == "__main__":
