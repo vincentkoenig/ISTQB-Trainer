@@ -102,5 +102,50 @@ def api_submit_answer(question_id):
     })
 
 
+@app.route("/review/<int:lo_id>")
+def review_page(lo_id):
+    return render_template("review.html", lo_id=lo_id)
+
+
+@app.route("/api/review/<int:lo_id>")
+def api_review_questions(lo_id):
+    lo = LearningObjective.query.get_or_404(lo_id)
+    filter_mode = request.args.get("filter", "all")  # "all" oder "struggling"
+
+    data = []
+    for chapter in sorted(lo.chapters, key=lambda c: c.number):
+        chapter_questions = []
+        for q in chapter.questions:
+            is_struggling = q.box == 1 and q.times_seen > 0
+            if filter_mode == "struggling" and not is_struggling:
+                continue
+
+            chapter_questions.append({
+                "id": q.id,
+                "prompt": q.prompt,
+                "options": {
+                    "A": q.option_a,
+                    "B": q.option_b,
+                    "C": q.option_c,
+                    "D": q.option_d,
+                },
+                "correct_option": q.correct_option,
+                "explanation": q.explanation,
+                "box": q.box,
+                "times_seen": q.times_seen,
+                "times_correct": q.times_correct,
+                "is_struggling": is_struggling,
+            })
+
+        if chapter_questions:
+            data.append({
+                "chapter_number": chapter.number,
+                "chapter_title": chapter.title,
+                "questions": chapter_questions,
+            })
+
+    return jsonify({"lo_title": lo.title, "chapters": data})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
