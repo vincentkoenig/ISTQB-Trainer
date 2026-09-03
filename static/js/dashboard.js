@@ -15,6 +15,7 @@ async function loadDashboard() {
             </div>
             <small>${lo.due_count} Frage(n) heute fällig</small><br>
             <a class="button" href="/practice/${lo.id}">Üben</a>
+            <a class="button" href="/review/${lo.id}" style="background:#6c757d;">Alle Fragen ansehen</a>
         `;
         container.appendChild(card);
     });
