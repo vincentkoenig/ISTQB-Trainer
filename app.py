@@ -1,12 +1,12 @@
 import os
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 from models import db, LearningObjective, Question, MockExamAttempt
 from datetime import datetime
 import random
 import json
 from dotenv import load_dotenv
 
-load_dotenv()  # liest die .env-Datei ein
+load_dotenv()
 
 
 def create_app():
@@ -14,14 +14,12 @@ def create_app():
 
     database_url = os.environ.get("DATABASE_URL")
     if database_url:
-        # Supabase/Postgres
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     else:
-        # Fallback: lokale SQLite (falls keine .env vorhanden)
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///istqb_trainer.db"
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = "dev-only-change-later"
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-later")
 
     db.init_app(app)
 
@@ -30,8 +28,9 @@ def create_app():
 
     return app
 
-
 app = create_app()
+
+APP_PASSWORD = os.environ.get("APP_PASSWORD")
 
 
 MOCK_EXAM_DISTRIBUTION = {
@@ -44,6 +43,37 @@ MOCK_EXAM_DISTRIBUTION = {
 }
 MOCK_EXAM_DURATION_SECONDS = 60 * 60
 MOCK_EXAM_PASS_PERCENT = 65
+
+
+# ---------- Login ----------
+
+@app.before_request
+def require_login():
+    # Login-Seite und statische Dateien immer erlauben
+    if request.endpoint in ("login", "static"):
+        return
+
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        entered_password = request.form.get("password", "")
+        if APP_PASSWORD and entered_password == APP_PASSWORD:
+            session["logged_in"] = True
+            return redirect(url_for("dashboard"))
+        error = "Falsches Passwort."
+
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.pop("logged_in", None)
+    return redirect(url_for("login"))
 
 
 # ---------- Dashboard ----------
