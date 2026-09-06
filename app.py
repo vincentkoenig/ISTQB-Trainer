@@ -1,25 +1,25 @@
+import os
 from flask import Flask, render_template, jsonify, request
 from models import db, LearningObjective, Question, MockExamAttempt
 from datetime import datetime
 import random
 import json
+from dotenv import load_dotenv
 
-
-MOCK_EXAM_DISTRIBUTION = {
-    "LO1": 8,
-    "LO2": 6,
-    "LO3": 4,
-    "LO4": 11,
-    "LO5": 9,
-    "LO6": 2,
-}
-MOCK_EXAM_DURATION_SECONDS = 60 * 60
-MOCK_EXAM_PASS_PERCENT = 65
+load_dotenv()  # liest die .env-Datei ein
 
 
 def create_app():
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///istqb_trainer.db"
+
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        # Supabase/Postgres
+        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    else:
+        # Fallback: lokale SQLite (falls keine .env vorhanden)
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///istqb_trainer.db"
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "dev-only-change-later"
 
@@ -32,6 +32,18 @@ def create_app():
 
 
 app = create_app()
+
+
+MOCK_EXAM_DISTRIBUTION = {
+    "LO1": 8,
+    "LO2": 6,
+    "LO3": 4,
+    "LO4": 11,
+    "LO5": 9,
+    "LO6": 2,
+}
+MOCK_EXAM_DURATION_SECONDS = 60 * 60
+MOCK_EXAM_PASS_PERCENT = 65
 
 
 # ---------- Dashboard ----------
