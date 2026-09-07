@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'practice_screen.dart';
+import 'review_screen.dart';
 
 const supabaseUrl = 'https://bbicfqarichingoyvwkt.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaWNmcWFyaWNoaW5nb3l2d2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2OTIxNTIsImV4cCI6MjEwNDI2ODE1Mn0.Bpz779UnfrZJJfNFtLTATJPHJGrPe8jjjS4M1VzxFv4';
@@ -276,61 +277,86 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   final lo = _dashboardData[index];
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: InkWell(
-                      onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PracticeScreen(
-                              loId: lo['id'],
-                              loTitle: lo['title'],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${lo['code']} – ${lo['title']}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: (lo['percent'] as int) / 100,
+                              minHeight: 10,
+                              backgroundColor: Colors.grey.shade200,
                             ),
                           ),
-                        );
-                        _loadData();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${lo['code']} – ${lo['title']}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          const SizedBox(height: 6),
+                          Text('${lo['mastered']} von ${lo['total']} Fragen gemeistert (${lo['percent']}%)'),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            const SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: (lo['percent'] as int) / 100,
-                                minHeight: 10,
-                                backgroundColor: Colors.grey.shade200,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildBoxRow('Noch nie beantwortet', lo['not_started'], Colors.grey),
+                                _buildBoxRow('Zuletzt falsch (Box 1)', lo['box1_seen'], Colors.red),
+                                _buildBoxRow('Box 2', lo['box2'], Colors.orange),
+                                _buildBoxRow('Box 3', lo['box3'], Colors.amber),
+                                _buildBoxRow('Box 4', lo['box4'], Colors.lightGreen),
+                                _buildBoxRow('Box 5 (sicher)', lo['box5'], Colors.green),
+                              ],
                             ),
-                            const SizedBox(height: 6),
-                            Text('${lo['mastered']} von ${lo['total']} Fragen gemeistert (${lo['percent']}%)'),
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(6),
+                          ),
+                          const SizedBox(height: 6),
+                          Text('${lo['due_count']} Frage(n) heute fällig', style: const TextStyle(color: Colors.grey)),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => PracticeScreen(
+                                          loId: lo['id'],
+                                          loTitle: lo['title'],
+                                        ),
+                                      ),
+                                    );
+                                    _loadData();
+                                  },
+                                  child: const Text('Üben'),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildBoxRow('Noch nie beantwortet', lo['not_started'], Colors.grey),
-                                  _buildBoxRow('Zuletzt falsch (Box 1)', lo['box1_seen'], Colors.red),
-                                  _buildBoxRow('Box 2', lo['box2'], Colors.orange),
-                                  _buildBoxRow('Box 3', lo['box3'], Colors.amber),
-                                  _buildBoxRow('Box 4', lo['box4'], Colors.lightGreen),
-                                  _buildBoxRow('Box 5 (sicher)', lo['box5'], Colors.green),
-                                ],
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ReviewScreen(
+                                          loId: lo['id'],
+                                          loTitle: lo['title'],
+                                        ),
+                                      ),
+                                    );
+                                    _loadData();
+                                  },
+                                  child: const Text('Fragen ansehen'),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text('${lo['due_count']} Frage(n) heute fällig', style: const TextStyle(color: Colors.grey)),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   );
