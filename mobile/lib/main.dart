@@ -28,40 +28,72 @@ class IstqbTrainerApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         useMaterial3: true,
       ),
-      home: const ConnectionTestScreen(),
+      home: const AuthGate(),
     );
   }
 }
 
-class ConnectionTestScreen extends StatefulWidget {
-  const ConnectionTestScreen({super.key});
+/// Entscheidet, ob Login-Screen oder Dashboard gezeigt wird,
+/// abhängig vom aktuellen Auth-Status.
+class AuthGate extends StatefulWidget {
+  const AuthGate({super.key});
 
   @override
-  State<ConnectionTestScreen> createState() => _ConnectionTestScreenState();
+  State<AuthGate> createState() => _AuthGateState();
 }
 
-class _ConnectionTestScreenState extends State<ConnectionTestScreen> {
-  String _status = 'Teste Verbindung...';
+class _AuthGateState extends State<AuthGate> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AuthState>(
+      stream: supabase.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = supabase.auth.currentSession;
+        if (session != null) {
+          return const DashboardScreen();
+        }
+        return const LoginScreen();
+      },
+    );
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    _testConnection();
-  }
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
-  Future<void> _testConnection() async {
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
     try {
-      final response = await supabase
-          .from('learning_objectives')
-          .select()
-          .limit(10);
-
+      await supabase.auth.signInWithPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      // Bei Erfolg übernimmt der StreamBuilder in AuthGate automatisch den Wechsel zum Dashboard
+    } on AuthException catch (e) {
       setState(() {
-        _status = 'Verbindung erfolgreich! ${response.length} Learning Objectives gefunden.';
+        _errorMessage = e.message;
       });
     } catch (e) {
       setState(() {
-        _status = 'Fehler: $e';
+        _errorMessage = 'Unerwarteter Fehler: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -69,17 +101,133 @@ class _ConnectionTestScreenState extends State<ConnectionTestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ISTQB Trainer')),
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Text(
-            _status,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'ISTQB Trainer',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 32),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'E-Mail',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Passwort',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 24),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _login,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Anmelden'),
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  List<Map<String, dynamic>> _learningObjectives = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final response = await supabase
+          .from('learning_objectives')
+          .select()
+          .order('code');
+
+      setState(() {
+        _learningObjectives = List<Map<String, dynamic>>.from(response);
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fehler beim Laden: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _logout() async {
+    await supabase.auth.signOut();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('ISTQB Trainer'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+            tooltip: 'Abmelden',
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _learningObjectives.length,
+              itemBuilder: (context, index) {
+                final lo = _learningObjectives[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    title: Text('${lo['code']} – ${lo['title']}'),
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
