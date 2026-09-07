@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'practice_screen.dart';
 import 'review_screen.dart';
+import 'mock_exam_screen.dart';
 
 const supabaseUrl = 'https://bbicfqarichingoyvwkt.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaWNmcWFyaWNoaW5nb3l2d2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2OTIxNTIsImV4cCI6MjEwNDI2ODE1Mn0.Bpz779UnfrZJJfNFtLTATJPHJGrPe8jjjS4M1VzxFv4';
@@ -259,6 +260,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('ISTQB Trainer'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.quiz),
+            tooltip: 'Prüfungssimulation',
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const MockExamScreen()),
+              );
+              _loadData();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
