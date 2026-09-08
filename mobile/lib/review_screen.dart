@@ -3,6 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
+const primaryColor = Color(0xFF4F46E5);
+const accentColor = Color(0xFF10B981);
+const errorColor = Color(0xFFEF4444);
+
 class ReviewScreen extends StatefulWidget {
   final int loId;
   final String loTitle;
@@ -16,7 +20,7 @@ class ReviewScreen extends StatefulWidget {
 class _ReviewScreenState extends State<ReviewScreen> {
   List<Map<String, dynamic>> _allQuestions = [];
   bool _isLoading = true;
-  String _filter = 'all'; // "all" oder "struggling"
+  String _filter = 'all';
   final Set<int> _expandedIds = {};
 
   @override
@@ -70,7 +74,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
               children: [
                 Expanded(
                   child: ChoiceChip(
-                    label: const Text('Alle Fragen'),
+                    label: Text(
+                      'Alle Fragen',
+                      style: TextStyle(
+                        color: _filter == 'all' ? Colors.white : const Color(0xFF1F2937),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     selected: _filter == 'all',
                     onSelected: (_) => setState(() => _filter = 'all'),
                   ),
@@ -78,7 +88,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: ChoiceChip(
-                    label: const Text('Noch nicht gemeistert'),
+                    label: Text(
+                      'Noch nicht gemeistert',
+                      style: TextStyle(
+                        color: _filter == 'struggling' ? Colors.white : const Color(0xFF1F2937),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     selected: _filter == 'struggling',
                     onSelected: (_) => setState(() => _filter = 'struggling'),
                   ),
@@ -90,7 +106,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : grouped.isEmpty
-                    ? const Center(child: Text('Keine Fragen in dieser Ansicht.'))
+                    ? Center(
+                        child: Text('Keine Fragen in dieser Ansicht.', style: TextStyle(color: Colors.grey.shade600)),
+                      )
                     : ListView(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         children: grouped.entries.map((entry) {
@@ -134,6 +152,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
+        borderRadius: BorderRadius.circular(18),
         onTap: () {
           setState(() {
             if (isExpanded) {
@@ -157,14 +176,15 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: isStruggling ? Colors.red.shade100 : Colors.green.shade100,
+                        color: isStruggling ? errorColor.withValues(alpha: 0.10) : accentColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         isStruggling ? 'Noch nicht gemeistert' : 'Box $box',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isStruggling ? Colors.red.shade900 : Colors.green.shade900,
+                          fontWeight: FontWeight.w600,
+                          color: isStruggling ? const Color(0xFF991B1B) : const Color(0xFF065F46),
                         ),
                       ),
                     ),
@@ -178,9 +198,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     margin: const EdgeInsets.only(bottom: 6),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isCorrect ? Colors.green.shade50 : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(6),
-                      border: isCorrect ? Border.all(color: Colors.green, width: 1.5) : null,
+                      color: isCorrect ? accentColor.withValues(alpha: 0.10) : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: isCorrect ? Border.all(color: accentColor, width: 1.4) : null,
                     ),
                     child: Text(
                       '${entry.key}) ${entry.value}',
@@ -196,16 +216,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(6),
+                      color: primaryColor.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(q['explanation'] as String, style: const TextStyle(fontSize: 13)),
+                    child: Text(q['explanation'] as String, style: const TextStyle(fontSize: 13, height: 1.4)),
                   ),
                 ],
                 const SizedBox(height: 6),
                 Text(
                   'Gesehen: $timesSeen× · Richtig: $timesCorrect×',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ],

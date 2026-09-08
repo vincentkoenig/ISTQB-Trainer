@@ -3,9 +3,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
-// Leitner-Intervalle in Tagen, analog zur Python-Version
 const Map<int, int> boxIntervals = {1: 0, 2: 3, 3: 7, 4: 14, 5: 30};
 const int maxBox = 5;
+
+const primaryColor = Color(0xFF4F46E5);
+const accentColor = Color(0xFF10B981);
+const errorColor = Color(0xFFEF4444);
 
 class PracticeScreen extends StatefulWidget {
   final int loId;
@@ -108,8 +111,34 @@ class _PracticeScreenState extends State<PracticeScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _questions.isEmpty
-              ? const Center(child: Text('Aktuell sind keine Fragen fällig. 🎉'))
+              ? _buildEmptyState()
               : _buildQuestionView(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.check_circle_outline, size: 56, color: accentColor),
+            const SizedBox(height: 16),
+            const Text(
+              'Aktuell sind keine Fragen fällig.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Schau später wieder vorbei!',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -130,12 +159,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
         children: [
           Text(
             'Frage ${_currentIndex + 1} von ${_questions.length}',
-            style: const TextStyle(color: Colors.grey),
+            style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             question['prompt'] as String,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
           Expanded(
@@ -144,25 +173,40 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 final letter = entry.key;
                 final text = entry.value;
 
-                Color? backgroundColor;
+                Color backgroundColor = Colors.grey.shade50;
+                Color borderColor = Colors.grey.shade200;
+                Color textColor = const Color(0xFF1F2937);
+
                 if (_answered) {
                   if (letter == correctOption) {
-                    backgroundColor = Colors.green.shade100;
+                    backgroundColor = accentColor.withValues(alpha: 0.12);
+                    borderColor = accentColor;
+                    textColor = const Color(0xFF065F46);
                   } else if (letter == _selectedLetter) {
-                    backgroundColor = Colors.red.shade100;
+                    backgroundColor = errorColor.withValues(alpha: 0.10);
+                    borderColor = errorColor;
+                    textColor = const Color(0xFF991B1B);
                   }
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: backgroundColor,
-                      alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: _answered ? null : () => _submitAnswer(letter),
+                    child: Container(
+                      width: double.infinity,
                       padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: borderColor, width: 1.4),
+                      ),
+                      child: Text(
+                        '$letter) $text',
+                        style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+                      ),
                     ),
-                    onPressed: _answered ? null : () => _submitAnswer(letter),
-                    child: Text('$letter) $text'),
                   ),
                 );
               }).toList(),
@@ -170,21 +214,31 @@ class _PracticeScreenState extends State<PracticeScreen> {
           ),
           if (_answered) ...[
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
+                color: primaryColor.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    _selectedLetter == correctOption ? '✅ Richtig!' : '❌ Falsch.',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Icon(
+                        _selectedLetter == correctOption ? Icons.check_circle : Icons.cancel,
+                        color: _selectedLetter == correctOption ? accentColor : errorColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _selectedLetter == correctOption ? 'Richtig!' : 'Falsch.',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   if (question['explanation'] != null) ...[
-                    const SizedBox(height: 6),
-                    Text(question['explanation'] as String),
+                    const SizedBox(height: 8),
+                    Text(question['explanation'] as String, style: const TextStyle(fontSize: 13.5, height: 1.4)),
                   ],
                 ],
               ),

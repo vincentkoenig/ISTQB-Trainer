@@ -3,6 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
+const accentColor = Color(0xFF10B981);
+const errorColor = Color(0xFFEF4444);
+
 class MockExamHistoryScreen extends StatefulWidget {
   const MockExamHistoryScreen({super.key});
 
@@ -46,12 +49,13 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _attempts.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
-                    padding: EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(24.0),
                     child: Text(
                       'Noch keine Prüfungssimulationen absolviert.',
                       textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ),
                 )
@@ -71,6 +75,7 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
+                          borderRadius: BorderRadius.circular(18),
                           onTap: () {
                             setState(() {
                               if (isExpanded) {
@@ -93,7 +98,7 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                                       children: [
                                         Text(
                                           _formatDate(attempt['taken_at'] as String),
-                                          style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
@@ -101,7 +106,7 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                                           style: TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold,
-                                            color: passed ? Colors.green : Colors.red,
+                                            color: passed ? accentColor : errorColor,
                                           ),
                                         ),
                                         Text('${attempt['total_correct']} von ${attempt['total_questions']} richtig'),
@@ -110,13 +115,15 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                       decoration: BoxDecoration(
-                                        color: passed ? Colors.green.shade100 : Colors.red.shade100,
+                                        color: passed
+                                            ? accentColor.withValues(alpha: 0.12)
+                                            : errorColor.withValues(alpha: 0.10),
                                         borderRadius: BorderRadius.circular(14),
                                       ),
                                       child: Text(
                                         passed ? 'Bestanden' : 'Nicht bestanden',
                                         style: TextStyle(
-                                          color: passed ? Colors.green.shade900 : Colors.red.shade900,
+                                          color: passed ? const Color(0xFF065F46) : const Color(0xFF991B1B),
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
                                         ),
@@ -125,7 +132,7 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                                   ],
                                 ),
                                 if (isExpanded) ...[
-                                  const Divider(height: 24),
+                                  Divider(height: 24, color: Colors.grey.shade200),
                                   ...loResults.map((lo) {
                                     final percent = (lo['percent'] as num).toDouble();
                                     final isOk = percent >= 65;
@@ -145,7 +152,7 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                                             style: TextStyle(
                                               fontSize: 13,
                                               fontWeight: FontWeight.bold,
-                                              color: isOk ? Colors.green : Colors.red,
+                                              color: isOk ? accentColor : errorColor,
                                             ),
                                           ),
                                         ],

@@ -4,6 +4,7 @@ import 'practice_screen.dart';
 import 'review_screen.dart';
 import 'mock_exam_screen.dart';
 import 'mock_exam_history_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const supabaseUrl = 'https://bbicfqarichingoyvwkt.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaWNmcWFyaWNoaW5nb3l2d2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2OTIxNTIsImV4cCI6MjEwNDI2ODE1Mn0.Bpz779UnfrZJJfNFtLTATJPHJGrPe8jjjS4M1VzxFv4';
@@ -26,11 +27,125 @@ class IstqbTrainerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Modernere Palette: Indigo als Hauptfarbe, warmes Grün als Akzent
+    const primaryColor = Color(0xFF4F46E5); // Indigo 600
+    const primaryDark = Color(0xFF3730A3);
+    const accentColor = Color(0xFF10B981); // Emerald 500
+    const backgroundColor = Color(0xFFFAFAFC);
+    const surfaceColor = Colors.white;
+
+    final baseTextTheme = GoogleFonts.plusJakartaSansTextTheme();
+
     return MaterialApp(
       title: 'ISTQB Trainer',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
         useMaterial3: true,
+        scaffoldBackgroundColor: backgroundColor,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
+          primary: primaryColor,
+          secondary: accentColor,
+          surface: surfaceColor,
+        ),
+        textTheme: baseTextTheme.copyWith(
+          headlineSmall: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            letterSpacing: -0.5,
+          ),
+          titleMedium: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+          bodyMedium: GoogleFonts.plusJakartaSans(
+            fontSize: 14.5,
+            height: 1.4,
+          ),
+          bodySmall: GoogleFonts.plusJakartaSans(
+            fontSize: 12.5,
+            color: Colors.grey.shade600,
+          ),
+        ),
+
+        appBarTheme: AppBarTheme(
+          backgroundColor: backgroundColor,
+          foregroundColor: const Color(0xFF1F2937),
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          titleTextStyle: GoogleFonts.plusJakartaSans(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF1F2937),
+          ),
+          iconTheme: const IconThemeData(color: Color(0xFF4F46E5)),
+        ),
+
+        cardTheme: CardThemeData(
+          elevation: 0,
+          color: surfaceColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: Colors.grey.shade200, width: 1),
+          ),
+          margin: EdgeInsets.zero,
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            textStyle: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w700),
+            elevation: 0,
+          ),
+        ),
+
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: primaryDark,
+            backgroundColor: primaryColor.withValues(alpha: 0.06),
+            side: BorderSide.none,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            textStyle: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w700),
+          ),
+        ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: primaryColor, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: accentColor,
+        ),
+
+        chipTheme: ChipThemeData(
+          selectedColor: primaryColor,
+          backgroundColor: Colors.grey.shade100,
+          labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          side: BorderSide.none,
+        ),
+
+        dividerTheme: DividerThemeData(color: Colors.grey.shade200, thickness: 1),
       ),
       home: const AuthGate(),
     );
@@ -177,7 +292,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final los = await supabase
         .from('learning_objectives')
         .select()
-        .order('code');
+        .order('code', ascending: true);
 
     final allQuestions = await supabase
         .from('questions')

@@ -394,7 +394,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                     style: TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
-                      color: passed ? Colors.green : Colors.red,
+                      color: passed ? const Color(0xFF10B981) : const Color(0xFFEF4444),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -422,7 +422,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   '$percent%',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isOk ? Colors.green : Colors.red,
+                    color: isOk ? const Color(0xFF10B981) : const Color(0xFFEF4444),
                   ),
                 ),
               ),
