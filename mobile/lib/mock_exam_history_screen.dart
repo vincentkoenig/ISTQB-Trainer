@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:convert';
 
 final supabase = Supabase.instance.client;
 
@@ -68,9 +69,10 @@ class _MockExamHistoryScreenState extends State<MockExamHistoryScreen> {
                       final attempt = _attempts[index];
                       final passed = attempt['passed'] as bool;
                       final isExpanded = _expandedIndices.contains(index);
-                      final loResults = List<Map<String, dynamic>>.from(
-                        attempt['lo_breakdown'] ?? [],
-                      );
+                      final loResults = attempt['lo_breakdown_json'] != null
+                          ? List<Map<String, dynamic>>.from(
+                              jsonDecode(attempt['lo_breakdown_json'] as String) as List)
+                          : <Map<String, dynamic>>[];
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),

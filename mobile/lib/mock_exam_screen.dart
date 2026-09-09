@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -143,7 +144,8 @@ class _MockExamScreenState extends State<MockExamScreen> {
   Future<void> _submitExam() async {
     _timer?.cancel();
 
-    final loStats = <String, Map<String, dynamic>>{};
+    try {
+      final loStats = <String, Map<String, dynamic>>{};
     int totalCorrect = 0;
 
     for (final q in _questions) {
@@ -217,7 +219,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
       'total_questions': totalAnswered,
       'overall_percent': overallPercent,
       'passed': passed,
-      'lo_breakdown': loResults,
+      'lo_breakdown_json': jsonEncode(loResults),
     });
 
     setState(() {
@@ -230,6 +232,13 @@ class _MockExamScreenState extends State<MockExamScreen> {
         'lo_results': loResults,
       };
     });
+  } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fehler beim Speichern der Prüfung: $e')),
+        );
+      }
+    }
   }
 
   @override
