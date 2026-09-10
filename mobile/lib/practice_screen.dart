@@ -61,10 +61,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
     });
 
     if (!wasCorrect) {
-      // Falsch: sofort speichern, feste 1-Minuten-Wiederholung
       await _saveAnswer(question, wasCorrect, null);
+      // Innerhalb dieser Sitzung sofort wieder einreihen, ein paar Fragen später,
+      // unabhängig vom Datenbank-Fälligkeitstimer (der bleibt zusätzlich für spätere Sitzungen bestehen)
+      final requeuedCopy = Map<String, dynamic>.from(question);
+      final insertPos = (_currentIndex + 3).clamp(0, _questions.length);
+      setState(() {
+        _questions.insert(insertPos, requeuedCopy);
+      });
     }
-    // Bei richtig: Speichern erfolgt erst nach Auswahl der Schwierigkeit (siehe _rateDifficulty)
   }
 
   Future<void> _rateDifficulty(String difficulty) async {
@@ -108,6 +113,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
       setState(() {
         question['box'] = box;
+        question['times_seen'] = timesSeen;
+        question['times_correct'] = timesCorrect;
       });
     } catch (e) {
       if (mounted) {
@@ -303,9 +310,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ],
               ),
             ] else ...[
-              const Text(
-                'Diese Frage wird dir in 1 Minute wieder gezeigt.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+              Text(
+                'Diese Frage wird dir gleich in dieser Sitzung nochmal gezeigt.',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 12),
               SizedBox(

@@ -66,17 +66,25 @@ class Question(db.Model):
     times_seen = db.Column(db.Integer, default=0, nullable=False)
     times_correct = db.Column(db.Integer, default=0, nullable=False)
 
-    def register_answer(self, was_correct: bool):
-        """Aktualisiert Box-Level und nächsten Wiederholungstermin nach einer Antwort."""
+    def register_answer(self, was_correct: bool, difficulty: str = "einfach"):
+        """Aktualisiert Box-Level und nächsten Wiederholungstermin nach einer Antwort.
+        difficulty ist nur bei richtiger Antwort relevant: 'schwer', 'einfach', 'sehr_einfach'."""
         self.times_seen += 1
         if was_correct:
             self.times_correct += 1
             self.box = min(self.box + 1, MAX_BOX)
+
+            if difficulty == "schwer":
+                minutes = 5
+            elif difficulty == "sehr_einfach":
+                minutes = 60 * 24  # 1 Tag
+            else:  # "einfach" oder Fallback
+                minutes = 10
+
+            self.next_review = datetime.utcnow() + timedelta(minutes=minutes)
         else:
             self.box = 1
-
-        days = BOX_INTERVALS[self.box]
-        self.next_review = datetime.utcnow() + timedelta(days=days)
+            self.next_review = datetime.utcnow() + timedelta(minutes=1)
 
     def __repr__(self):
         return f"<Question {self.id} (Box {self.box})>"
@@ -93,6 +101,7 @@ class MockExamAttempt(db.Model):
     overall_percent = db.Column(db.Float, nullable=False)
     passed = db.Column(db.Boolean, nullable=False)
     lo_breakdown_json = db.Column(db.Text, nullable=False)  # JSON-String der lo_results
+    question_details_json = db.Column(db.Text)  # JSON: Liste von {prompt, options, selected, correct_option, explanation}
 
     def __repr__(self):
         return f"<MockExamAttempt {self.taken_at} - {self.overall_percent}%>"

@@ -156,9 +156,10 @@ def api_practice_questions(lo_id):
 def api_submit_answer(question_id):
     question = Question.query.get_or_404(question_id)
     selected = request.json.get("selected")
+    difficulty = request.json.get("difficulty", "einfach")
 
     was_correct = (selected == question.correct_option)
-    question.register_answer(was_correct)
+    question.register_answer(was_correct, difficulty)
     db.session.commit()
 
     return jsonify({
@@ -259,21 +260,27 @@ def api_mock_exam_submit():
     total_correct = 0
     total_questions = len(answers)
 
+    question_details = []
     for question_id_str, selected in answers.items():
         question = Question.query.get(int(question_id_str))
         if not question:
             continue
 
         was_correct = (selected == question.correct_option)
-        question.register_answer(was_correct)
+        question.register_answer(was_correct, "einfach")
+
+        question_details.append({
+            "prompt": question.prompt,
+            "options": {
+                "A": question.option_a, "B": question.option_b,
+                "C": question.option_c, "D": question.option_d,
+            },
+            "selected": selected,
+            "correct_option": question.correct_option,
+            "explanation": question.explanation,
+        })
 
         lo = question.chapter.learning_objective
-        if lo.code not in lo_stats:
-            lo_stats[lo.code] = {"title": lo.title, "correct": 0, "total": 0}
-        lo_stats[lo.code]["total"] += 1
-        if was_correct:
-            lo_stats[lo.code]["correct"] += 1
-            total_correct += 1
 
     lo_results = []
     for code in sorted(lo_stats.keys()):
@@ -297,6 +304,7 @@ def api_mock_exam_submit():
         overall_percent=overall_percent,
         passed=passed,
         lo_breakdown_json=json.dumps(lo_results),
+        question_details_json=json.dumps(question_details),
     )
     db.session.add(attempt)
     db.session.commit()
