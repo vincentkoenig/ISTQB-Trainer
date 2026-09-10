@@ -1,21 +1,20 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
 const Map<String, int> mockExamDistribution = {
-  'LO1': 8,
-  'LO2': 6,
-  'LO3': 4,
-  'LO4': 11,
-  'LO5': 9,
-  'LO6': 2,
+  'LO1': 8, 'LO2': 6, 'LO3': 4, 'LO4': 11, 'LO5': 9, 'LO6': 2,
 };
 const int mockExamDurationSeconds = 60 * 60;
 const int mockExamPassPercent = 65;
+
+const primaryColor = Color(0xFF4F46E5);
+const accentColor = Color(0xFF10B981);
+const errorColor = Color(0xFFEF4444);
 
 class MockExamScreen extends StatefulWidget {
   const MockExamScreen({super.key});
@@ -55,10 +54,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
     final random = Random();
 
     for (final entry in mockExamDistribution.entries) {
-      final loCode = entry.key;
-      final count = entry.value;
-
-      final lo = losList.firstWhere((l) => l['code'] == loCode, orElse: () => {});
+      final lo = losList.firstWhere((l) => l['code'] == entry.key, orElse: () => {});
       if (lo.isEmpty) continue;
 
       final questions = await supabase
@@ -68,8 +64,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
 
       final pool = List<Map<String, dynamic>>.from(questions);
       pool.shuffle(random);
-      final sampleSize = min(count, pool.length);
-      selectedQuestions.addAll(pool.take(sampleSize));
+      selectedQuestions.addAll(pool.take(min(entry.value, pool.length)));
     }
 
     selectedQuestions.shuffle(random);
@@ -84,9 +79,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _remainingSeconds--;
-      });
+      setState(() => _remainingSeconds--);
       if (_remainingSeconds <= 0) {
         timer.cancel();
         _submitExam();
@@ -101,26 +94,18 @@ class _MockExamScreenState extends State<MockExamScreen> {
   }
 
   void _selectAnswer(String letter) {
-    setState(() {
-      _answers[_questions[_currentIndex]['id'] as int] = letter;
-    });
+    setState(() => _answers[_questions[_currentIndex]['id'] as int] = letter);
   }
 
   void _goNext() {
-    if (_currentIndex + 1 < _questions.length) {
-      setState(() => _currentIndex++);
-    }
+    if (_currentIndex + 1 < _questions.length) setState(() => _currentIndex++);
   }
 
   void _goPrev() {
-    if (_currentIndex > 0) {
-      setState(() => _currentIndex--);
-    }
+    if (_currentIndex > 0) setState(() => _currentIndex--);
   }
 
-  void _goToQuestion(int index) {
-    setState(() => _currentIndex = index);
-  }
+  void _goToQuestion(int index) => setState(() => _currentIndex = index);
 
   Future<void> _confirmSubmit() async {
     final unanswered = _questions.length - _answers.length;
@@ -146,93 +131,103 @@ class _MockExamScreenState extends State<MockExamScreen> {
 
     try {
       final loStats = <String, Map<String, dynamic>>{};
-    int totalCorrect = 0;
+      final questionDetails = <Map<String, dynamic>>[];
+      int totalCorrect = 0;
 
-    for (final q in _questions) {
-      final qId = q['id'] as int;
-      final selected = _answers[qId];
-      if (selected == null) continue;
+      for (final q in _questions) {
+        final qId = q['id'] as int;
+        final selected = _answers[qId];
+        if (selected == null) continue;
 
-      final correctOption = q['correct_option'] as String;
-      final wasCorrect = selected == correctOption;
+        final correctOption = q['correct_option'] as String;
+        final wasCorrect = selected == correctOption;
 
-      // Leitner-Box aktualisieren, analog zum Übungsmodus
-      int box = q['box'] as int;
-      int timesSeen = (q['times_seen'] as int) + 1;
-      int timesCorrect = q['times_correct'] as int;
+        int box = q['box'] as int;
+        int timesSeen = (q['times_seen'] as int) + 1;
+        int timesCorrect = q['times_correct'] as int;
 
-      const boxIntervals = {1: 0, 2: 3, 3: 7, 4: 14, 5: 30};
-      if (wasCorrect) {
-        timesCorrect += 1;
-        box = box + 1 > 5 ? 5 : box + 1;
-        totalCorrect++;
-      } else {
-        box = 1;
+        DateTime nextReview;
+        if (wasCorrect) {
+          timesCorrect += 1;
+          box = box + 1 > 5 ? 5 : box + 1;
+          totalCorrect++;
+          nextReview = DateTime.now().toUtc().add(const Duration(minutes: 10));
+        } else {
+          box = 1;
+          nextReview = DateTime.now().toUtc().add(const Duration(minutes: 1));
+        }
+
+        await supabase.from('questions').update({
+          'box': box,
+          'times_seen': timesSeen,
+          'times_correct': timesCorrect,
+          'next_review': nextReview.toIso8601String(),
+        }).eq('id', qId);
+
+        questionDetails.add({
+          'prompt': q['prompt'],
+          'options': {
+            'A': q['option_a'], 'B': q['option_b'], 'C': q['option_c'], 'D': q['option_d'],
+          },
+          'selected': selected,
+          'correct_option': correctOption,
+          'explanation': q['explanation'],
+        });
+
+        final loId = q['chapters']['lo_id'];
+        loStats.putIfAbsent(loId.toString(), () => {'correct': 0, 'total': 0});
+        loStats[loId.toString()]!['total'] = (loStats[loId.toString()]!['total'] as int) + 1;
+        if (wasCorrect) {
+          loStats[loId.toString()]!['correct'] = (loStats[loId.toString()]!['correct'] as int) + 1;
+        }
       }
-      final nextReview = DateTime.now().toUtc().add(Duration(days: boxIntervals[box]!));
 
-      await supabase.from('questions').update({
-        'box': box,
-        'times_seen': timesSeen,
-        'times_correct': timesCorrect,
-        'next_review': nextReview.toIso8601String(),
-      }).eq('id', qId);
+      final los = await supabase.from('learning_objectives').select();
+      final losList = List<Map<String, dynamic>>.from(los);
 
-      final loId = q['chapters']['lo_id'];
-      // LO-Code und Titel aus der bereits geladenen Frage holen wir separat, da hier nur lo_id vorliegt
-      loStats.putIfAbsent(loId.toString(), () => {'correct': 0, 'total': 0});
-      loStats[loId.toString()]!['total'] = (loStats[loId.toString()]!['total'] as int) + 1;
-      if (wasCorrect) {
-        loStats[loId.toString()]!['correct'] = (loStats[loId.toString()]!['correct'] as int) + 1;
-      }
-    }
-
-    // LO-Titel/Code nachladen für die Ergebnisanzeige
-    final los = await supabase.from('learning_objectives').select();
-    final losList = List<Map<String, dynamic>>.from(los);
-
-    final loResults = <Map<String, dynamic>>[];
-    loStats.forEach((loIdStr, stat) {
-      final lo = losList.firstWhere((l) => l['id'].toString() == loIdStr, orElse: () => {});
-      final total = stat['total'] as int;
-      final correct = stat['correct'] as int;
-      final percent = total > 0 ? (correct / total * 100) : 0.0;
-      loResults.add({
-        'code': lo['code'] ?? '?',
-        'title': lo['title'] ?? 'Unbekannt',
-        'correct': correct,
-        'total': total,
-        'percent': double.parse(percent.toStringAsFixed(2)),
+      final loResults = <Map<String, dynamic>>[];
+      loStats.forEach((loIdStr, stat) {
+        final lo = losList.firstWhere((l) => l['id'].toString() == loIdStr, orElse: () => {});
+        final total = stat['total'] as int;
+        final correct = stat['correct'] as int;
+        final percent = total > 0 ? (correct / total * 100) : 0.0;
+        loResults.add({
+          'code': lo['code'] ?? '?',
+          'title': lo['title'] ?? 'Unbekannt',
+          'correct': correct,
+          'total': total,
+          'percent': double.parse(percent.toStringAsFixed(2)),
+        });
       });
-    });
-    loResults.sort((a, b) => (a['code'] as String).compareTo(b['code'] as String));
+      loResults.sort((a, b) => (a['code'] as String).compareTo(b['code'] as String));
 
-    final totalAnswered = _answers.length;
-    final overallPercent = totalAnswered > 0
-        ? double.parse((totalCorrect / totalAnswered * 100).toStringAsFixed(2))
-        : 0.0;
-    final passed = overallPercent >= mockExamPassPercent;
+      final totalAnswered = _answers.length;
+      final overallPercent = totalAnswered > 0
+          ? double.parse((totalCorrect / totalAnswered * 100).toStringAsFixed(2))
+          : 0.0;
+      final passed = overallPercent >= mockExamPassPercent;
 
-    // Versuch in der Datenbank speichern
-    await supabase.from('mock_exam_attempts').insert({
-      'total_correct': totalCorrect,
-      'total_questions': totalAnswered,
-      'overall_percent': overallPercent,
-      'passed': passed,
-      'lo_breakdown_json': jsonEncode(loResults),
-    });
-
-    setState(() {
-      _isSubmitted = true;
-      _result = {
+      await supabase.from('mock_exam_attempts').insert({
         'total_correct': totalCorrect,
         'total_questions': totalAnswered,
         'overall_percent': overallPercent,
         'passed': passed,
-        'lo_results': loResults,
-      };
-    });
-  } catch (e) {
+        'lo_breakdown_json': jsonEncode(loResults),
+        'question_details_json': jsonEncode(questionDetails),
+      });
+
+      setState(() {
+        _isSubmitted = true;
+        _result = {
+          'total_correct': totalCorrect,
+          'total_questions': totalAnswered,
+          'overall_percent': overallPercent,
+          'passed': passed,
+          'lo_results': loResults,
+          'question_details': questionDetails,
+        };
+      });
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Fehler beim Speichern der Prüfung: $e')),
@@ -249,21 +244,15 @@ class _MockExamScreenState extends State<MockExamScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
-    if (_isSubmitted) {
-      return _buildResultView();
-    }
-
+    if (_isSubmitted) return _buildResultView();
     return _buildExamView();
   }
 
   Widget _buildExamView() {
     final question = _questions[_currentIndex];
     final options = {
-      'A': question['option_a'] as String,
-      'B': question['option_b'] as String,
-      'C': question['option_c'] as String,
-      'D': question['option_d'] as String,
+      'A': question['option_a'] as String, 'B': question['option_b'] as String,
+      'C': question['option_c'] as String, 'D': question['option_d'] as String,
     };
     final selected = _answers[question['id']];
 
@@ -277,9 +266,8 @@ class _MockExamScreenState extends State<MockExamScreen> {
               child: Text(
                 _timerDisplay,
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: _remainingSeconds < 300 ? Colors.red : Colors.black,
+                  fontSize: 18, fontWeight: FontWeight.bold,
+                  color: _remainingSeconds < 300 ? errorColor : null,
                 ),
               ),
             ),
@@ -305,12 +293,12 @@ class _MockExamScreenState extends State<MockExamScreen> {
                       width: 36,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isAnswered ? Colors.green.shade100 : Colors.grey.shade100,
+                        color: isAnswered ? accentColor.withValues(alpha: 0.12) : Colors.grey.shade100,
                         border: Border.all(
-                          color: isCurrent ? Colors.blueGrey.shade800 : Colors.grey.shade400,
+                          color: isCurrent ? primaryColor : Colors.grey.shade300,
                           width: isCurrent ? 2 : 1,
                         ),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text('${index + 1}', style: const TextStyle(fontSize: 12)),
                     ),
@@ -325,24 +313,25 @@ class _MockExamScreenState extends State<MockExamScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    question['prompt'] as String,
-                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                  ),
+                  Text(question['prompt'] as String, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 20),
                   ...options.entries.map((entry) {
                     final isSelected = selected == entry.key;
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: isSelected ? Colors.blue.shade50 : null,
-                          side: BorderSide(color: isSelected ? Colors.blueGrey.shade800 : Colors.grey.shade400, width: isSelected ? 2 : 1),
-                          alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () => _selectAnswer(entry.key),
+                        child: Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: isSelected ? primaryColor.withValues(alpha: 0.08) : Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: isSelected ? primaryColor : Colors.grey.shade200, width: isSelected ? 2 : 1.4),
+                          ),
+                          child: Text('${entry.key}) ${entry.value}', style: const TextStyle(fontWeight: FontWeight.w500)),
                         ),
-                        onPressed: () => _selectAnswer(entry.key),
-                        child: Text('${entry.key}) ${entry.value}'),
                       ),
                     );
                   }),
@@ -354,27 +343,17 @@ class _MockExamScreenState extends State<MockExamScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _currentIndex > 0 ? _goPrev : null,
-                    child: const Text('Zurück'),
-                  ),
-                ),
+                Expanded(child: OutlinedButton(onPressed: _currentIndex > 0 ? _goPrev : null, child: const Text('Zurück'))),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
+                    style: ElevatedButton.styleFrom(backgroundColor: errorColor),
                     onPressed: _confirmSubmit,
-                    child: const Text('Abgeben', style: TextStyle(color: Colors.white)),
+                    child: const Text('Abgeben'),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _currentIndex < _questions.length - 1 ? _goNext : null,
-                    child: const Text('Weiter'),
-                  ),
-                ),
+                Expanded(child: OutlinedButton(onPressed: _currentIndex < _questions.length - 1 ? _goNext : null, child: const Text('Weiter'))),
               ],
             ),
           ),
@@ -387,6 +366,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
     final r = _result!;
     final passed = r['passed'] as bool;
     final loResults = List<Map<String, dynamic>>.from(r['lo_results']);
+    final questionDetails = List<Map<String, dynamic>>.from(r['question_details']);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Prüfungsergebnis')),
@@ -398,21 +378,11 @@ class _MockExamScreenState extends State<MockExamScreen> {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  Text(
-                    '${r['overall_percent']}%',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: passed ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                    ),
-                  ),
+                  Text('${r['overall_percent']}%', style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: passed ? accentColor : errorColor)),
                   const SizedBox(height: 8),
                   Text('${r['total_correct']} von ${r['total_questions']} Fragen richtig'),
                   const SizedBox(height: 12),
-                  Text(
-                    passed ? '✅ Bestanden!' : '❌ Nicht bestanden',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+                  Text(passed ? '✅ Bestanden!' : '❌ Nicht bestanden', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const Text('Bestehensgrenze: 65%', style: TextStyle(color: Colors.grey)),
                 ],
               ),
@@ -427,22 +397,111 @@ class _MockExamScreenState extends State<MockExamScreen> {
               child: ListTile(
                 title: Text('${lo['code']} – ${lo['title']}'),
                 subtitle: Text('${lo['correct']} / ${lo['total']}'),
-                trailing: Text(
-                  '$percent%',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isOk ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                  ),
-                ),
+                trailing: Text('$percent%', style: TextStyle(fontWeight: FontWeight.bold, color: isOk ? accentColor : errorColor)),
               ),
             );
           }),
           const SizedBox(height: 16),
           ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => MockExamReviewScreen(questionDetails: questionDetails)),
+              );
+            },
+            child: const Text('Alle Fragen & Antworten ansehen'),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
             onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
             child: const Text('Zurück zum Dashboard'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MockExamReviewScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> questionDetails;
+
+  const MockExamReviewScreen({super.key, required this.questionDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Prüfung im Detail')),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: questionDetails.length,
+        itemBuilder: (context, index) {
+          final q = questionDetails[index];
+          final options = Map<String, dynamic>.from(q['options']);
+          final selected = q['selected'] as String?;
+          final correctOption = q['correct_option'] as String;
+          final wasCorrect = selected == correctOption;
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        selected == null ? Icons.remove_circle_outline : (wasCorrect ? Icons.check_circle : Icons.cancel),
+                        color: selected == null ? Colors.grey : (wasCorrect ? accentColor : errorColor),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      Text('Frage ${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(q['prompt'] as String, style: const TextStyle(fontSize: 14)),
+                  const SizedBox(height: 10),
+                  ...options.entries.map((entry) {
+                    final letter = entry.key;
+                    final isCorrect = letter == correctOption;
+                    final isSelected = letter == selected;
+
+                    Color bg = Colors.grey.shade50;
+                    Border? border;
+                    if (isCorrect) {
+                      bg = accentColor.withValues(alpha: 0.10);
+                      border = Border.all(color: accentColor, width: 1.4);
+                    } else if (isSelected) {
+                      bg = errorColor.withValues(alpha: 0.10);
+                      border = Border.all(color: errorColor, width: 1.4);
+                    }
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8), border: border),
+                      child: Row(
+                        children: [
+                          Expanded(child: Text('$letter) ${entry.value}', style: const TextStyle(fontSize: 13))),
+                          if (isSelected && !isCorrect) const Text('Deine Antwort', style: TextStyle(fontSize: 11, color: errorColor)),
+                          if (isCorrect) const Text('Richtig', style: TextStyle(fontSize: 11, color: accentColor)),
+                        ],
+                      ),
+                    );
+                  }),
+                  if (q['explanation'] != null) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: primaryColor.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(8)),
+                      child: Text(q['explanation'] as String, style: const TextStyle(fontSize: 12.5, height: 1.4)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

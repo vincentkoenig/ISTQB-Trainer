@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
-
-const Map<int, int> boxIntervals = {1: 0, 2: 3, 3: 7, 4: 14, 5: 30};
 const int maxBox = 5;
 
 const primaryColor = Color(0xFF4F46E5);
@@ -25,6 +23,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
   int _currentIndex = 0;
   bool _isLoading = true;
   bool _answered = false;
+  bool _wasCorrect = false;
   String? _selectedLetter;
 
   @override
@@ -55,20 +54,49 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final correctOption = question['correct_option'] as String;
     final wasCorrect = letter == correctOption;
 
+    setState(() {
+      _selectedLetter = letter;
+      _answered = true;
+      _wasCorrect = wasCorrect;
+    });
+
+    if (!wasCorrect) {
+      // Falsch: sofort speichern, feste 1-Minuten-Wiederholung
+      await _saveAnswer(question, wasCorrect, null);
+    }
+    // Bei richtig: Speichern erfolgt erst nach Auswahl der Schwierigkeit (siehe _rateDifficulty)
+  }
+
+  Future<void> _rateDifficulty(String difficulty) async {
+    final question = _questions[_currentIndex];
+    await _saveAnswer(question, true, difficulty);
+    _nextQuestion();
+  }
+
+  Future<void> _saveAnswer(Map<String, dynamic> question, bool wasCorrect, String? difficulty) async {
     int box = question['box'] as int;
-    int timesSeen = question['times_seen'] as int;
+    int timesSeen = (question['times_seen'] as int) + 1;
     int timesCorrect = question['times_correct'] as int;
 
-    timesSeen += 1;
+    DateTime nextReview;
+
     if (wasCorrect) {
       timesCorrect += 1;
       box = (box + 1) > maxBox ? maxBox : box + 1;
+
+      int minutes;
+      if (difficulty == 'schwer') {
+        minutes = 5;
+      } else if (difficulty == 'sehr_einfach') {
+        minutes = 60 * 24;
+      } else {
+        minutes = 10;
+      }
+      nextReview = DateTime.now().toUtc().add(Duration(minutes: minutes));
     } else {
       box = 1;
+      nextReview = DateTime.now().toUtc().add(const Duration(minutes: 1));
     }
-
-    final days = boxIntervals[box]!;
-    final nextReview = DateTime.now().toUtc().add(Duration(days: days));
 
     try {
       await supabase.from('questions').update({
@@ -79,9 +107,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
       }).eq('id', question['id']);
 
       setState(() {
-        _selectedLetter = letter;
-        _answered = true;
-        _questions[_currentIndex]['box'] = box;
+        question['box'] = box;
       });
     } catch (e) {
       if (mounted) {
@@ -225,13 +251,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   Row(
                     children: [
                       Icon(
-                        _selectedLetter == correctOption ? Icons.check_circle : Icons.cancel,
-                        color: _selectedLetter == correctOption ? accentColor : errorColor,
+                        _wasCorrect ? Icons.check_circle : Icons.cancel,
+                        color: _wasCorrect ? accentColor : errorColor,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _selectedLetter == correctOption ? 'Richtig!' : 'Falsch.',
+                        _wasCorrect ? 'Richtig!' : 'Falsch.',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -244,15 +270,52 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _nextQuestion,
-                child: Text(
-                  _currentIndex + 1 < _questions.length ? 'Nächste Frage' : 'Fertig',
+            if (_wasCorrect) ...[
+              const Text(
+                'Wie schwer war diese Frage für dich?',
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: errorColor),
+                      onPressed: () => _rateDifficulty('schwer'),
+                      child: const Text('Schwer\n5 Min', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _rateDifficulty('einfach'),
+                      child: const Text('Einfach\n10 Min', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: accentColor),
+                      onPressed: () => _rateDifficulty('sehr_einfach'),
+                      child: const Text('Sehr einfach\n1 Tag', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              const Text(
+                'Diese Frage wird dir in 1 Minute wieder gezeigt.',
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _nextQuestion,
+                  child: Text(_currentIndex + 1 < _questions.length ? 'Nächste Frage' : 'Fertig'),
                 ),
               ),
-            ),
+            ],
           ],
         ],
       ),
