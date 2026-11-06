@@ -156,11 +156,14 @@ def api_practice_questions(lo_id):
 def api_submit_answer(question_id):
     question = Question.query.get_or_404(question_id)
     selected = request.json.get("selected")
-    difficulty = request.json.get("difficulty", "einfach")
+    difficulty = request.json.get("difficulty")
 
     was_correct = (selected == question.correct_option)
-    question.register_answer(was_correct, difficulty)
-    db.session.commit()
+    # Richtige Antworten werden erst mit der Schwierigkeitsbewertung gespeichert,
+    # sonst zählt FSRS eine Antwort als zwei Wiederholungen.
+    if not was_correct or difficulty:
+        question.register_answer(was_correct, difficulty)
+        db.session.commit()
 
     return jsonify({
         "correct": was_correct,
@@ -267,7 +270,7 @@ def api_mock_exam_submit():
             continue
 
         was_correct = (selected == question.correct_option)
-        question.register_answer(was_correct, "einfach")
+        question.register_answer(was_correct, "einfach", source="mock_exam")
 
         question_details.append({
             "prompt": question.prompt,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'scheduling.dart';
 
 final supabase = Supabase.instance.client;
-const int maxBox = 5;
 
 const primaryColor = Color(0xFF4F46E5);
 const accentColor = Color(0xFF10B981);
@@ -79,43 +79,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   Future<void> _saveAnswer(Map<String, dynamic> question, bool wasCorrect, String? difficulty) async {
-    int box = question['box'] as int;
-    int timesSeen = (question['times_seen'] as int) + 1;
-    int timesCorrect = question['times_correct'] as int;
-
-    DateTime nextReview;
-
-    if (wasCorrect) {
-      timesCorrect += 1;
-      box = (box + 1) > maxBox ? maxBox : box + 1;
-
-      int minutes;
-      if (difficulty == 'schwer') {
-        minutes = 5;
-      } else if (difficulty == 'sehr_einfach') {
-        minutes = 60 * 24;
-      } else {
-        minutes = 10;
-      }
-      nextReview = DateTime.now().toUtc().add(Duration(minutes: minutes));
-    } else {
-      box = 1;
-      nextReview = DateTime.now().toUtc().add(const Duration(minutes: 1));
-    }
-
     try {
-      await supabase.from('questions').update({
-        'box': box,
-        'times_seen': timesSeen,
-        'times_correct': timesCorrect,
-        'next_review': nextReview.toIso8601String(),
-      }).eq('id', question['id']);
+      final update = await saveAnswer(
+        question,
+        wasCorrect: wasCorrect,
+        difficulty: difficulty,
+        source: 'practice',
+      );
 
-      setState(() {
-        question['box'] = box;
-        question['times_seen'] = timesSeen;
-        question['times_correct'] = timesCorrect;
-      });
+      // Auch die Kopie für die Wiedervorlage in dieser Sitzung braucht den neuen FSRS-Stand
+      setState(() => question.addAll(update));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -289,14 +262,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: errorColor),
                       onPressed: () => _rateDifficulty('schwer'),
-                      child: const Text('Schwer\n5 Min', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                      child: const Text('Schwer', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => _rateDifficulty('einfach'),
-                      child: const Text('Einfach\n10 Min', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                      child: const Text('Einfach', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -304,7 +277,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: accentColor),
                       onPressed: () => _rateDifficulty('sehr_einfach'),
-                      child: const Text('Sehr einfach\n1 Tag', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+                      child: const Text('Sehr einfach', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
                     ),
                   ),
                 ],
