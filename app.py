@@ -272,6 +272,9 @@ def api_mock_exam_submit():
         was_correct = (selected == question.correct_option)
         question.register_answer(was_correct, "einfach", source="mock_exam")
 
+        if was_correct:
+            total_correct += 1
+
         question_details.append({
             "prompt": question.prompt,
             "options": {
@@ -284,6 +287,10 @@ def api_mock_exam_submit():
         })
 
         lo = question.chapter.learning_objective
+        stat = lo_stats.setdefault(lo.code, {"title": lo.title, "correct": 0, "total": 0})
+        stat["total"] += 1
+        if was_correct:
+            stat["correct"] += 1
 
     lo_results = []
     for code in sorted(lo_stats.keys()):
