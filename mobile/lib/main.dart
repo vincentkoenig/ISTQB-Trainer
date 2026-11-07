@@ -4,6 +4,7 @@ import 'practice_screen.dart';
 import 'review_screen.dart';
 import 'mock_exam_screen.dart';
 import 'mock_exam_history_screen.dart';
+import 'scheduling.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const supabaseUrl = 'https://bbicfqarichingoyvwkt.supabase.co';
@@ -319,7 +320,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final box5 = questionsForLo.where((q) => (q['box'] as int) == 5).length;
 
       final dueCount = questionsForLo.where((q) {
-        final nextReview = DateTime.parse(q['next_review'] as String);
+        final nextReview = parseUtc(q['next_review'] as String);
         return nextReview.isBefore(nowUtc) || nextReview.isAtSameMomentAs(nowUtc);
       }).length;
 

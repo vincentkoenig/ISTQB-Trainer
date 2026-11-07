@@ -1,0 +1,327 @@
+[
+  {
+    "name": "neu_nur_richtig",
+    "start": {
+      "state": 1,
+      "step": 0,
+      "stability": null,
+      "difficulty": null,
+      "last_review": null,
+      "due": "2026-11-01T08:00:00Z"
+    },
+    "reviews": [
+      {
+        "at": "2026-11-01T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 1,
+          "step": 1,
+          "stability": 2.3065,
+          "difficulty": 2.118103970459016,
+          "due": "2026-11-01T08:10:00Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-01T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 2.3065,
+          "difficulty": 2.111214235785395,
+          "due": "2026-11-03T08:14:24Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-04T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 13.835840133660218,
+          "difficulty": 2.1043313908464483,
+          "due": "2026-11-18T08:14:24Z",
+          "box": 3
+        }
+      },
+      {
+        "at": "2026-11-14T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 47.48846560646711,
+          "difficulty": 2.0974554287524403,
+          "due": "2026-12-31T08:14:24Z",
+          "box": 5
+        }
+      },
+      {
+        "at": "2026-12-14T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 206.28178039785232,
+          "difficulty": 1.0,
+          "due": "2027-02-12T08:14:24Z",
+          "box": 5
+        }
+      }
+    ]
+  },
+  {
+    "name": "neu_schwer_und_falsch",
+    "start": {
+      "state": 1,
+      "step": 0,
+      "stability": null,
+      "difficulty": null,
+      "last_review": null,
+      "due": "2026-11-01T08:00:00Z"
+    },
+    "reviews": [
+      {
+        "at": "2026-11-01T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "schwer",
+        "expected": {
+          "state": 1,
+          "step": 0,
+          "stability": 1.2931,
+          "difficulty": 5.112170705601056,
+          "due": "2026-11-01T08:05:30Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-01T08:14:24Z",
+        "was_correct": false,
+        "difficulty": null,
+        "expected": {
+          "state": 1,
+          "step": 0,
+          "stability": 0.4514029154253082,
+          "difficulty": 8.378632117467106,
+          "due": "2026-11-01T08:15:24Z",
+          "box": 1
+        }
+      },
+      {
+        "at": "2026-11-01T08:28:48Z",
+        "was_correct": false,
+        "difficulty": null,
+        "expected": {
+          "state": 1,
+          "step": 0,
+          "stability": 0.1688774512073012,
+          "difficulty": 9.452295771609876,
+          "due": "2026-11-01T08:29:48Z",
+          "box": 1
+        }
+      },
+      {
+        "at": "2026-11-01T08:43:12Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 1,
+          "step": 1,
+          "stability": 0.19947322256372596,
+          "difficulty": 9.438071845135104,
+          "due": "2026-11-01T08:53:12Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-01T11:07:12Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 0.23304476454854742,
+          "difficulty": 9.423862142586806,
+          "due": "2026-11-02T11:07:12Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-09T11:07:12Z",
+        "was_correct": false,
+        "difficulty": null,
+        "expected": {
+          "state": 3,
+          "step": 0,
+          "stability": 0.14652276943360107,
+          "difficulty": 9.79585577330255,
+          "due": "2026-11-09T11:17:12Z",
+          "box": 1
+        }
+      },
+      {
+        "at": "2026-11-09T11:21:36Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 0.17469308553479426,
+          "difficulty": 9.781288286826085,
+          "due": "2026-11-10T11:21:36Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-11-14T11:21:36Z",
+        "was_correct": true,
+        "difficulty": "schwer",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 0.5985122765929393,
+          "difficulty": 9.840037342126159,
+          "due": "2026-11-15T11:21:36Z",
+          "box": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "neu_sehr_einfach",
+    "start": {
+      "state": 1,
+      "step": 0,
+      "stability": null,
+      "difficulty": null,
+      "last_review": null,
+      "due": "2026-11-01T08:00:00Z"
+    },
+    "reviews": [
+      {
+        "at": "2026-11-01T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 8.2956,
+          "difficulty": 1.0,
+          "due": "2026-11-09T08:00:00Z",
+          "box": 3
+        }
+      },
+      {
+        "at": "2026-11-09T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 65.62422616189994,
+          "difficulty": 1.0,
+          "due": "2027-01-08T08:00:00Z",
+          "box": 5
+        }
+      },
+      {
+        "at": "2026-12-19T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 292.68025507208415,
+          "difficulty": 1.0,
+          "due": "2027-02-17T08:00:00Z",
+          "box": 5
+        }
+      },
+      {
+        "at": "2027-02-17T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 602.8208925700166,
+          "difficulty": 1.0,
+          "due": "2027-04-18T08:00:00Z",
+          "box": 5
+        }
+      }
+    ]
+  },
+  {
+    "name": "migriert_box4",
+    "start": {
+      "state": 2,
+      "step": null,
+      "stability": 7.0,
+      "difficulty": 5.0,
+      "last_review": "2026-10-12T08:00:00Z",
+      "due": "2026-11-01T08:00:00Z"
+    },
+    "reviews": [
+      {
+        "at": "2026-11-01T08:00:00Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 38.53000316547179,
+          "difficulty": 4.9902283692968386,
+          "due": "2026-12-10T08:00:00Z",
+          "box": 5
+        }
+      },
+      {
+        "at": "2026-12-01T08:00:00Z",
+        "was_correct": false,
+        "difficulty": null,
+        "expected": {
+          "state": 3,
+          "step": 0,
+          "stability": 2.513969997399022,
+          "difficulty": 8.338550500731797,
+          "due": "2026-12-01T08:10:00Z",
+          "box": 1
+        }
+      },
+      {
+        "at": "2026-12-01T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 2.513969997399022,
+          "difficulty": 8.325440319527903,
+          "due": "2026-12-04T08:14:24Z",
+          "box": 2
+        }
+      },
+      {
+        "at": "2026-12-13T08:14:24Z",
+        "was_correct": true,
+        "difficulty": "sehr_einfach",
+        "expected": {
+          "state": 2,
+          "step": null,
+          "stability": 16.95711330051528,
+          "difficulty": 7.751108878092077,
+          "due": "2026-12-30T08:14:24Z",
+          "box": 4
+        }
+      }
+    ]
+  }
+]

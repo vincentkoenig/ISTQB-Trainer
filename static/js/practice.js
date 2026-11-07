@@ -62,7 +62,7 @@ async function submitAnswer(selectedLetter) {
     const response = await fetch(`/api/answer/${question.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selected: selectedLetter, difficulty: "einfach" }),
+        body: JSON.stringify({ selected: selectedLetter }),
     });
     const result = await response.json();
     window._lastResult = result;
@@ -87,9 +87,9 @@ async function submitAnswer(selectedLetter) {
             </div>
             <p style="margin-top:12px; font-size:14px; color:#666;">Wie schwer war diese Frage für dich?</p>
             <div style="display:flex; gap:8px; margin-top:8px;">
-                <button class="next-button" style="background:#c0392b;" onclick="rateDifficulty('schwer')">Schwer (5 Min)</button>
-                <button class="next-button" style="background:#2c3e50;" onclick="rateDifficulty('einfach')">Einfach (10 Min)</button>
-                <button class="next-button" style="background:#27ae60;" onclick="rateDifficulty('sehr_einfach')">Sehr einfach (1 Tag)</button>
+                <button class="next-button" style="background:#c0392b;" onclick="rateDifficulty('schwer')">Schwer</button>
+                <button class="next-button" style="background:#2c3e50;" onclick="rateDifficulty('einfach')">Einfach</button>
+                <button class="next-button" style="background:#27ae60;" onclick="rateDifficulty('sehr_einfach')">Sehr einfach</button>
             </div>
         `;
     } else {

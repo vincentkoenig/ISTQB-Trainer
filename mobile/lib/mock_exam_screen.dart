@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'scheduling.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -142,27 +143,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
         final correctOption = q['correct_option'] as String;
         final wasCorrect = selected == correctOption;
 
-        int box = q['box'] as int;
-        int timesSeen = (q['times_seen'] as int) + 1;
-        int timesCorrect = q['times_correct'] as int;
+        if (wasCorrect) totalCorrect++;
 
-        DateTime nextReview;
-        if (wasCorrect) {
-          timesCorrect += 1;
-          box = box + 1 > 5 ? 5 : box + 1;
-          totalCorrect++;
-          nextReview = DateTime.now().toUtc().add(const Duration(minutes: 10));
-        } else {
-          box = 1;
-          nextReview = DateTime.now().toUtc().add(const Duration(minutes: 1));
-        }
-
-        await supabase.from('questions').update({
-          'box': box,
-          'times_seen': timesSeen,
-          'times_correct': timesCorrect,
-          'next_review': nextReview.toIso8601String(),
-        }).eq('id', qId);
+        await saveAnswer(q, wasCorrect: wasCorrect, difficulty: 'einfach', source: 'mock_exam');
 
         questionDetails.add({
           'prompt': q['prompt'],
